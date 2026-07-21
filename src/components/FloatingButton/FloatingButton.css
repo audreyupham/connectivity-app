@@ -1,0 +1,20 @@
+.create-new {
+    text-decoration: none;
+    color: black;
+    font-size: 100pt;
+}
+
+.create-new button {
+    background-color: blue;
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 50px;
+    border-radius: 50%;
+    position: fixed;
+    bottom: 5%;
+    right: 5%;
+    cursor: pointer;
+    width: 100px;
+}

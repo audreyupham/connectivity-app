@@ -1,0 +1,11 @@
+.contacts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.card-link {
+    color: black;
+    text-decoration: none;
+}
