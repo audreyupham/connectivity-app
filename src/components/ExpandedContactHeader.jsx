@@ -9,7 +9,7 @@ export default function ExpandedContactHeader({ contact }) {
         alt=""
         className="contact-avatar"
       />
-      <h2 className="contact-name">{contact?.name}</h2>
+      <h2 className="contact-name">{contact?.name ?? ""}</h2>
     </div>
   );
 }

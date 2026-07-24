@@ -64,12 +64,15 @@ export default function ContactDetailsLayout({
 
       {/* Add-note mode: new note field */}
       {mode === "add-note" && (
+        
         <TextAreaField
           label="New Note"
           value={contactDraft.newNote}
           onChange={(val) => onChange("newNote", val)}
         />
-      )}
+        
+        
+      ) }
     </div>
   );
 }

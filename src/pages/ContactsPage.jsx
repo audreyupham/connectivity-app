@@ -4,18 +4,18 @@ import SearchBar from "../components/SearchBar/SearchBar";
 import "./ContactsPage.css";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export default function ContactsPage() {
     const navigate = useNavigate();
 
-    const contacts = [
-        { id: 1, name: "John Doe", avatarUrl: "/default-avatar.png" },
-        { id: 2, name: "Jane Smith", avatarUrl: "/default-avatar.png" },
-        { id: 3, name: "Michael Johnson", avatarUrl: "/default-avatar.png" },
-        { id: 4, name: "Emily Davis", avatarUrl: "/default-avatar.png" },
-        { id: 5, name: "Chris Brown", avatarUrl: "/default-avatar.png" },
-        { id: 6, name: "Sarah Wilson", avatarUrl: "/default-avatar.png" }
-    ];
+    const [contacts, setContacts] = useState([]);
+    
+    useEffect(() => {
+    fetch("http://localhost:3001/contacts")
+      .then(res => res.json())
+      .then(data => setContacts(data));
+    }, []);
 
     return (
         <>
@@ -26,7 +26,11 @@ export default function ContactsPage() {
         
         <div className="contacts-grid">
             {contacts.map(contact => (
-                <Link to={`/contacts/${contact.id}`} className="card-link">
+                <Link 
+                    key={contact.id}
+                    to={`/contacts/${contact.id}`} 
+                    className="card-link"
+                >
                     <ContactCard contact={contact} />
                 </Link>
             ))}

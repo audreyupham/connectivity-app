@@ -1,34 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ContactDetailsLayout from "../components/ContactDetailsLayout/ContactDetailsLayout";
 
 export default function ExpandedContactPage() {
-  const { id } = useParams();
   const navigate = useNavigate();
+  const { id } = useParams();
 
-  // TODO: replace with real database later
-  const contacts = [
-    { id: 1, name: "John Doe", generalNotes: "", timestampedNotes: [] },
-    { id: 2, name: "Jane Smith", generalNotes: "", timestampedNotes: [] },
-    { id: 3, name: "Michael Johnson", generalNotes: "", timestampedNotes: [] },
-    { id: 4, name: "Emily Davis", generalNotes: "", timestampedNotes: [] },
-    { id: 5, name: "Chris Brown", generalNotes: "", timestampedNotes: [] },
-    { id: 6, name: "Sarah Wilson", generalNotes: "", timestampedNotes: [] }
-  ];
-
-  const contact = contacts.find(c => c.id === Number(id));
-
+  const [contact, setContact] = useState(null);
+  const [draft, setDraft] = useState({
+    name: "",
+    generalNotes: ""
+  });
   const [mode, setMode] = useState("view");
-  const [draft, setDraft] = useState(contact);
+
+  //fetch contact from backend
+  useEffect(() => {
+    fetch(`http://localhost:3001/contacts/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        setContact(data)
+        setDraft({
+          name: data.name,
+          generalNotes: data.generalNotes
+        })
+      });
+  }, [id]);
+
+  if (!contact) return <div>Loading...</div>;
+
+
 
   function handleChange(field, value) {
     setDraft(prev => ({ ...prev, [field]: value }));
   }
 
-  function handleSave() {
-    console.log("Saving updated contact:", draft);
+  async function handleSave() {
+    const res = await fetch(`http://localhost:3001/contacts/${contact.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(draft),
+    });
+
+    const updated = await res.json();
+    setContact(updated);
     setMode("view");
   }
+
+  console.log("EXPANDED SAVE FIRED", mode, draft);
 
   return (
     <ContactDetailsLayout
