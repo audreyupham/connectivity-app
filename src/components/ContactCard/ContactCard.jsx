@@ -1,7 +1,7 @@
 import React from "react";
 import "./ContactCard.css";
 
-export default function ContactCard({contact}) {
+export default function ContactCard({contact, generalNotes}) {
     return (
         <div className="contact-card">
             <img 
@@ -12,7 +12,7 @@ export default function ContactCard({contact}) {
             <div className="contact-info">
                 <h3>{contact.name}</h3>
                 <p className="contact-subtext">
-                    Additional details go here...
+                    {contact.generalNotes || "No additonal details yet."}
                 </p>
             </div>
         </div>

@@ -2,17 +2,18 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar/SearchBar";
 import ContactDetailsLayout from "../components/ContactDetailsLayout/ContactDetailsLayout";
+import api from "../utils/api";
 
 export default function CreateNewPage() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const navigate = useNavigate();
-  
+
+  // exact query param name: contactId
   const contactId = params.get("contactId");
   const nameParam = params.get("name");
 
   const [contacts, setContacts] = useState([]);
-
   const [mode, setMode] = useState("choose");
   const [selectedContact, setSelectedContact] = useState(null);
   const [draft, setDraft] = useState({
@@ -20,32 +21,47 @@ export default function CreateNewPage() {
     generalNotes: "",
     newNote: ""
   });
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:3001/contacts")
-      .then(res => res.json())
-      .then(data => setContacts(data));
+    let mounted = true;
+    async function load() {
+      const { ok, data } = await api.get("/contacts");
+      if (ok && mounted) setContacts(data || []);
+    }
+    load();
+    return () => { mounted = false; };
   }, []);
-
 
   // Handle query parameters (contactId or name)
   useEffect(() => {
+    let mounted = true;
     if (contactId) {
-      fetch(`http://localhost:3001/contacts/${contactId}`)
-        .then(res => res.json())
-        .then(contact => {
-          setSelectedContact(contact);
-          setDraft({
-            name: contact.name,
-            generalNotes: contact.generalNotes,
-            newNote: ""
-          });
-          setMode("add-note");
+      (async () => {
+        const { ok, data, status } = await api.get(`/contacts/${encodeURIComponent(contactId)}`);
+        if (!ok) {
+          // ignore aborts if api marks them
+          if (data && data.aborted) return;
+          if (!mounted) return;
+          setError(data || { message: `Error ${status}` });
+          return;
+        }
+        if (!mounted) return;
+        setSelectedContact(data);
+        setDraft({
+          name: data.name || "",
+          generalNotes: data.generalNotes || "",
+          newNote: ""
         });
+        setMode("add-note");
+      })();
     } else if (nameParam) {
       setDraft({ name: nameParam, generalNotes: "", newNote: "" });
       setMode("create-contact");
     }
+    return () => { mounted = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
   // Update draft fields
@@ -54,48 +70,67 @@ export default function CreateNewPage() {
   }
 
   async function handleSave() {
-    console.log("HANDLE SAVE FIRED", mode, draft);
+    if (isSaving) return;
+    setIsSaving(true);
+    setError(null);
 
     try {
+      // ADD-NOTE MODE
       if (mode === "add-note") {
-        const res = await fetch(`http://localhost:3001/contacts/${contactId}/notes`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: draft.newNote }),
-        });
+        // prefer selectedContact.id, fall back to contactId query param
+        const targetId = selectedContact?.id || contactId;
+        if (!targetId) {
+          setError({ message: "No contact selected to add a note to." });
+          return;
+        }
 
-        console.log("NOTE RESPONSE", res.status);
+        const { ok, data, status } = await api.post(`/contacts/${encodeURIComponent(targetId)}/notes`, { text: draft.newNote });
+        if (!ok) {
+          if (data && data.aborted) return;
+          setError(data || { message: `Error ${status}` });
+          return;
+        }
 
-        const data = await res.json();
-        console.log("NOTE DATA", data);
-
-        navigate(`/contacts/${contactId}`);
+        navigate(`/contacts/${targetId}`);
         return;
       }
 
+      // CREATE-CONTACT MODE
       if (mode === "create-contact") {
-        const res = await fetch("http://localhost:3001/contacts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: draft.name,
-            generalNotes: draft.generalNotes,
-          }),
+        const { ok, data, status } = await api.post("/contacts", {
+          name: draft.name,
+          generalNotes: draft.generalNotes
         });
 
-        console.log("CREATE RESPONSE", res.status);
+        if (!ok) {
+          if (data && data.aborted) return;
+          setError(data || { message: `Error ${status}` });
+          return;
+        }
 
-        const newContact = await res.json();
-        console.log("NEW CONTACT", newContact);
+        // if user entered a newNote while creating, add it to the newly created contact
+        const newContactId = data?.id;
+        if (draft.newNote && newContactId) {
+          const noteResult = await api.post(`/contacts/${encodeURIComponent(newContactId)}/notes`, { text: draft.newNote });
+          if (!noteResult.ok) {
+            // ignore aborts, otherwise surface error but still navigate to contact
+            if (!(noteResult.data && noteResult.data.aborted)) {
+              setError(noteResult.data || { message: `Note error ${noteResult.status}` });
+            }
+          }
+        }
 
-        navigate(`/contacts/${newContact.id}`);
+        navigate(`/contacts/${newContactId}`);
+        return;
       }
     } catch (err) {
-      console.error("SAVE ERROR", err);
+      // ignore native aborts thrown by fetch
+      if (err && err.name === "AbortError") return;
+      setError({ message: err.message });
+    } finally {
+      setIsSaving(false);
     }
   }
-
-
 
   // ADD-NOTE MODE
   if (mode === "add-note") {
@@ -108,6 +143,10 @@ export default function CreateNewPage() {
         onChange={handleChange}
         onEdit={() => {}}
         onAddNote={() => {}}
+        onBack={() => navigate("/contacts")}
+        onCancel={() => navigate("/contacts")}
+        isSaving={isSaving}
+        error={error}
       />
     );
   }
@@ -123,6 +162,10 @@ export default function CreateNewPage() {
         onChange={handleChange}
         onEdit={() => {}}
         onAddNote={() => {}}
+        onBack={() => navigate("/contacts")}
+        onCancel={() => navigate("/contacts")}
+        isSaving={isSaving}
+        error={error}
       />
     );
   }

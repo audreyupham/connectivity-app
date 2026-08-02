@@ -7,12 +7,10 @@ export default function SearchBar({ contacts, onSelectContact, onCreateNewContac
 
   // Filter contacts based on the search input
   const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(value.toLowerCase())
+    contact.name.toLowerCase().includes(value.trim().toLowerCase())
   );
 
-  const shouldShowCreateNew =
-    value.length > 0 &&
-    filteredContacts.length === 0;
+  const shouldShowCreateNew = true;
 
 
   return (

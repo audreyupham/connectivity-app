@@ -1,0 +1,32 @@
+.note-item {
+  position: relative;
+  padding: 12px;
+}
+
+.note-actions {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.note-actions button {
+  /*TODO-- format buttons*/
+}
+
+.note-item:hover .note-actions {
+  opacity: 1;
+}
+
+.note-timestamp {
+  font-size: 1rem;
+  margin-bottom: 6px;
+  display: block;
+  color: black;
+}
+
+.note-text {
+    font-size: 1.3rem;
+    color: black;
+}
