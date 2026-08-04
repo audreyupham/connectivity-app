@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../utils/api";
 
-export default function SignUpPage() {
+export default function ResetPasswordConfirmPage() {
   const navigate = useNavigate();
+  const { token } = useParams();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -14,14 +13,13 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
 
-    const res = await api.post("/auth/register", {
-      name,
-      email,
+    const res = await api.post("/auth/reset-password", {
+      token,
       password,
     });
 
     if (!res.ok) {
-      setError(res.data?.error || "Signup failed");
+      setError(res.data?.error || "Unable to reset password");
       return;
     }
 
@@ -33,31 +31,15 @@ export default function SignUpPage() {
       {error && <p className="error">{error}</p>}
 
       <input
-        type="text"
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-      />
-
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-
-      <input
         type="password"
-        placeholder="Password"
+        placeholder="New Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         required
       />
 
       <button type="submit" className="login-button">
-        Create Account
+        Reset Password
       </button>
     </form>
   );

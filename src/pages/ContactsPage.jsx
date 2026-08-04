@@ -26,18 +26,28 @@ export default function ContactsPage() {
 
   return (
     <>
-      <SearchBar
-        contacts={contacts}
-        onSelectContact={(contact) => navigate(`/contacts/${contact.id}`)}
-        onCreateNewContact={(name) => navigate(`/create-new?name=${encodeURIComponent(name)}`)}
-      />
+      <div className="contacts-search-wrapper">
+        <SearchBar
+          contacts={contacts}
+          onSelectContact={(contact) =>
+            navigate(`/contacts/${contact.id}`)
+          }
+          onCreateNewContact={(name) =>
+            navigate(`/create-new?name=${encodeURIComponent(name)}`)
+          }
+        />
+      </div>
       {error && <div className="error">{error.message || "Error loading contacts"}</div>}
       <div className="contacts-grid">
-        {contacts.map(contact => (
-          <Link key={contact.id} to={`/contacts/${contact.id}`} className="card-link">
-            <ContactCard contact={contact} />
-          </Link>
-        ))}
+        {contacts.length === 0 ? (
+          <p>No contacts yet. Create your first contact!</p>
+        ) : (
+          contacts.map(contact => (
+            <Link key={contact.id} to={`/contacts/${contact.id}`} className="card-link">
+              <ContactCard contact={contact} />
+            </Link>
+          ))
+        )}
       </div>
     </>
   );
