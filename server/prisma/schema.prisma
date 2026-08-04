@@ -6,18 +6,30 @@ datasource db {
   provider = "postgresql"
 }
 
-
 model Contact {
   id               Int      @id @default(autoincrement())
   name             String
   generalNotes     String?
   timestampedNotes Note[]
+  userId           Int
+  user             User @relation(fields: [userId], references: [id])
 }
 
 model Note {
   id        Int      @id @default(autoincrement())
   timestamp DateTime @default(now())
   text      String
-  contact   Contact  @relation(fields: [contactId], references: [id])
   contactId Int
+  contact   Contact @relation(fields: [contactId], references: [id])
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  contacts  Contact[]
 }

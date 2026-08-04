@@ -18,11 +18,6 @@ export default function App() {
         {/* Default route */}
         <Route path="/" element={<LoginPage />} />
 
-        {/* Pages WITHOUT layout */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-
-        {/* Pages WITH layout */}
         <Route
           path="/contacts"
           element={
@@ -31,9 +26,6 @@ export default function App() {
             </Layout>
           }
         />
-
-        
-        
 
         <Route
           path="/ai-search"
@@ -62,7 +54,6 @@ export default function App() {
           }
         />
 
-
         <Route
             path="/create-new"
             element={
@@ -72,7 +63,23 @@ export default function App() {
             }
         />
 
+        <Route
+            path="/login"
+            element={
+              <Login-Layout>
+                <LoginPage />
+              </Login-Layout>
+            }
+        />
 
+        <Route
+            path="/signup"
+            element={
+              <Login-Layout>
+                <SignupPage />
+              </Login-Layout>
+            }
+        />
 
       </Routes>
     </Router>

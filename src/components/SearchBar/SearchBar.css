@@ -1,88 +1,83 @@
+/* wrapper anchors the absolute suggestions */
 .searchbar-container {
   position: relative;
   width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
+  max-width: 520px;
+  align-items: center;
+  
 }
 
+/* input */
 .search-input {
   width: 100%;
-  min-height: 50px;
-  padding: 10px 14px;
-  font-size: 16pt;
-  border: 1px solid #ccc;
+  min-height: 70px;
+  padding: 10px 12px;
+  
   border-radius: 50px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.search-input:focus {
-  border-color: black;
+  border: 1px solid #e0e0e0;
+  font-size: 18px;
+  box-sizing: border-box;
 }
 
-.hidden {
+/* suggestions overlay (absolute so it doesn't push content) */
+.suggestions {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 8px); /* sits directly below the input */
+  width: 100%;
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(20,20,20,0.08);
+  max-height: 320px;
+  overflow: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* hidden state */
+.suggestions.hidden {
   display: none;
 }
 
-.suggestions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;                 /* vertical spacing between items */
-  margin-top: 8px;
-  padding: 8px;
-  background: #fff;
-  border: 1px solid #e6e6e6;
-  border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(20,20,20,0.06);
-  max-height: 320px;
-  overflow: auto;
-}
-
-/* each suggestion row */
+/* items */
 .suggestion-item,
 .suggestion-create-new {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.12s ease, transform 0.06s ease;
+  transition: background 0.12s ease;
 }
 
-/* hover / keyboard focus */
 .suggestion-item:hover,
-.suggestion-item:focus,
 .suggestion-create-new:hover,
+.suggestion-item:focus,
 .suggestion-create-new:focus {
-  background-color: #f5f7fb;
+  background: #f5f7fb;
   outline: none;
 }
 
-/* subtle divider between items (optional) */
-.suggestion-item + .suggestion-item {
-  border-top: 1px solid rgba(0,0,0,0.04);
-}
-
-/* create-new styling to stand out */
+/* create-new styling */
 .suggestion-create-new {
-  background: linear-gradient(90deg, rgba(0,123,255,0.06), rgba(0,123,255,0.02));
   border: 1px dashed rgba(0,123,255,0.12);
-  color: #004085;
   font-weight: 600;
+  color: #004085;
 }
 
-/* small plus icon style if you add one */
-.suggestion-create-new::before {
-  content: "+";
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  margin-right: 8px;
-  border-radius: 50%;
-  background: #007bff;
-  color: white;
-  font-weight: 700;
-  font-size: 14px;
+.suggestion-create-new .plus {
+  display:inline-flex;
+  width:22px;height:22px;border-radius:50%;
+  background:#007bff;color:#fff;align-items:center;justify-content:center;margin-right:8px;
+}
+
+/* responsive */
+@media (max-width: 480px) {
+  .suggestions { max-height: 220px; }
+  .searchbar-container { max-width: 100%; }
 }
