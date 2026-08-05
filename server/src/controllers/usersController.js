@@ -1,50 +1,33 @@
 import prisma from "../db.js";
 
-export async function createUser(req, res) {
-  try {
-    const user = await prisma.user.create({
-      data: {
-        email: req.body.email,
-        name: req.body.name,
-      },
-    });
-
-    res.json(user);
-  } catch (err) {
-    console.error("Error creating user:", err);
-    res.status(500).json({ error: "Failed to create user" });
-  }
-}
-
-//getUser
-export async function getUser(req, res) {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: Number(req.params.id) }
-    });
-
-
-    res.json(user);
-  } catch (err) {
-    console.error("Error getting user:", err);
-    res.status(500).json({ error: "Failed to get user" });
-  }
-}
-
-//updateUser
 export async function updateUser(req, res) {
   try {
     const user = await prisma.user.update({
-      where: {id : Number(req.params.id) },
+      where: {
+        id: req.user.id
+      },
       data: {
-        email: req.body.email,
-        name: req.body.name,
+        name: req.body.name
       }
     });
 
-    res.json(user);
+    if (!req.body.name || req.body.name.trim() === "") {
+      return res.status(400).json({
+        error: "Name cannot be empty"
+      });
+    }
+    
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email
+    });
+
   } catch (err) {
     console.error("Error updating user:", err);
-    res.status(500).json({ error: "Failed to update user" });
+
+    res.status(500).json({
+      error: "Failed to update profile"
+    });
   }
 }

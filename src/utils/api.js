@@ -1,12 +1,13 @@
 const BASE = import.meta.env.VITE_API_BASE || "http://localhost:3001";
 
-async function request(path, opts = {}) {
+async function request(path, opts = {}, retry = true) {
   const url = `${BASE}${path}`;
 
   // Get token from localStorage
   const token = localStorage.getItem("accessToken");
 
   const init = {
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...(opts.headers || {}),
@@ -17,6 +18,34 @@ async function request(path, opts = {}) {
 
   try {
     const res = await fetch(url, init);
+
+    if (res.status === 401 && retry && !path.includes("/auth/refresh")) {
+
+    const refreshRes = await fetch(`${BASE}/auth/refresh`, {
+      method: "POST",
+      credentials: "include"
+    });
+
+    if (refreshRes.ok) {
+      const data = await refreshRes.json();
+
+      localStorage.setItem("accessToken", data.accessToken);
+
+      // Retry the original request once
+      return request(path, opts, false);
+    }
+
+    localStorage.removeItem("accessToken");
+    window.location.href = "/login";
+
+    return {
+      ok: false,
+      status: 401,
+      data: {
+        error: "Session expired."
+      }
+    };
+  }
 
     if (res.status === 204) return { ok: true, status: 204, data: null };
 

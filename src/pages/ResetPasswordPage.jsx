@@ -1,30 +1,42 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
 
 export default function ResetPasswordPage() {
-  const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError("");
 
-    const res = await api.post("/auth/reset-request", { email });
+    setError("");
+    setMessage("");
+
+    const res = await api.post("/auth/reset-request", {
+      email,
+    });
 
     if (!res.ok) {
-      setError(res.data?.error || "Unable to start reset");
+      setError(
+        res.data?.error ||
+        "Unable to start reset"
+      );
       return;
     }
 
-    navigate(`/reset-password/${res.data.token}`);
+    setMessage(
+      "Check your email for a password reset link."
+    );
   }
 
   return (
     <form onSubmit={handleSubmit} className="login-form">
+
       {error && <p className="error">{error}</p>}
+
+      {message && (
+        <p className="success">{message}</p>
+      )}
 
       <input
         type="email"
@@ -37,6 +49,7 @@ export default function ResetPasswordPage() {
       <button type="submit" className="login-button">
         Send Reset Link
       </button>
+
     </form>
   );
 }
