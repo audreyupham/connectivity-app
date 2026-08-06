@@ -10,7 +10,12 @@ model Contact {
   id               Int     @id @default(autoincrement())
   name             String
   generalNotes     String?
+  imageUrl         String?
+
+  lastActivityAt  DateTime @default(now())
+
   timestampedNotes Note[]
+
   userId           Int
   user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

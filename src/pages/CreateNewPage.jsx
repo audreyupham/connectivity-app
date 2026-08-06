@@ -172,17 +172,20 @@ export default function CreateNewPage() {
 
   // CHOOSE MODE (SearchBar only)
   return (
-    <SearchBar
-      contacts={contacts}
-      onSelectContact={(c) => {
-        setSelectedContact(c);
-        setDraft({ name: c.name, generalNotes: c.generalNotes, newNote: "" });
-        setMode("add-note");
-      }}
-      onCreateNewContact={(name) => {
-        setDraft({ name, generalNotes: "", newNote: "" });
-        setMode("create-contact");
-      }}
-    />
+    <div>
+      <SearchBar
+        contacts={contacts}
+        onSelectContact={(c) => {
+          setSelectedContact(c);
+          setDraft({ name: c.name, generalNotes: c.generalNotes, newNote: "" });
+          setMode("add-note");
+        }}
+        onCreateNewContact={(name) => {
+          setDraft({ name, generalNotes: "", newNote: "" });
+          setMode("create-contact");
+        }}
+      />
+      <h1 className="header">Select a Contact or Create a New One</h1>
+    </div>
   );
 }

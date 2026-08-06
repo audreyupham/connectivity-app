@@ -1,6 +1,7 @@
 import {formatTimestamp} from "../utils/formatTimestamp.js"
 import "./TimestampedNotesList.css"
-
+import editIcon from "../assets/edit-icon.png";
+import deleteIcon from "../assets/delete-icon.png";
 
 export default function TimestampedNotesList({ 
   notes,
@@ -18,7 +19,7 @@ export default function TimestampedNotesList({
 
   return (
     <div className="timestamped-notes">
-      <h3>Notes</h3>
+      
       {sortedNotes.map(note => (
         <div key={note.id} className="note-item">
           <span className="note-timestamp">{formatTimestamp(note.timestamp)}</span>
@@ -26,8 +27,31 @@ export default function TimestampedNotesList({
           
           {!readOnly && (
             <div className="note-actions">
-              <button onClick={() => onEditNote(note)}>Edit</button>
-              <button onClick={() => onDeleteNote(note.id)}>Delete</button>
+              <button
+                className="icon-button"
+                onClick={() => onEditNote(note)}
+                aria-label="Edit note"
+              >
+                <img 
+                  src={editIcon}
+                  alt="Edit"
+                />
+              </button>
+
+              <button
+                className="icon-button delete-icon"
+                onClick={() => {
+                  if (window.confirm("Delete this note?")) {
+                    onDeleteNote(note.id);
+                  }
+                }}
+                aria-label="Delete note"
+              >
+                <img
+                  src={deleteIcon}
+                  alt="Delete"
+                />
+              </button>
             </div>
           )}
         </div>

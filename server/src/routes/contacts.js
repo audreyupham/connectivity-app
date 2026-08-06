@@ -1,6 +1,10 @@
 import express from "express";
 import prisma from "../db.js";
 import authMiddleware from "../middleware/authMiddleware.js";
+import upload from "../middleware/uploadMiddleware.js";
+import sharp from "sharp";
+import fs from "fs/promises";
+import path from "path";
 
 const router = express.Router();
 
@@ -17,6 +21,9 @@ router.get("/", async (req, res) => {
       },
       include: {
         timestampedNotes: true
+      },
+      orderBy: {
+        lastActivityAt: "desc"
       }
     });
 
@@ -80,7 +87,8 @@ router.post("/", async (req, res) => {
           connect: {
             id: req.user.id
           }
-        }
+        },
+        lastActivityAt: new Date()
       }
     });
 
@@ -111,13 +119,28 @@ router.put("/:id", async (req, res) => {
       });
     }
 
+    if (contact.imageUrl) {
+      const oldPath = path.join(
+        process.cwd(),
+        "src",
+        contact.imageUrl.replace(/^\/+/, "")
+      );
+
+      try {
+        await fs.unlink(oldPath);
+      } catch {
+        // file already gone
+      }
+    }
+
     const updatedContact = await prisma.contact.update({
       where: {
         id: contact.id
       },
       data: {
         name: req.body.name,
-        generalNotes: req.body.generalNotes
+        generalNotes: req.body.generalNotes,
+        lastActivityAt: new Date()
       },
       include: {
         timestampedNotes: true
@@ -161,6 +184,15 @@ router.post("/:id/notes", async (req, res) => {
       data: {
         text: req.body.text.trim(),
         contactId: contact.id
+      }
+    });
+
+    await prisma.contact.update({
+      where: {
+        id: contact.id
+      },
+      data: {
+        lastActivityAt: new Date()
       }
     });
 
@@ -222,6 +254,15 @@ router.put("/:contactId/notes/:noteId", async (req, res) => {
       }
     });
 
+    await prisma.contact.update({
+      where: {
+        id: contact.id
+      },
+      data: {
+        lastActivityAt: new Date()
+      }
+    });
+
 
     const updatedContact = await prisma.contact.findFirst({
       where: {
@@ -243,6 +284,129 @@ router.put("/:contactId/notes/:noteId", async (req, res) => {
   }
 });
 
+// UPLOAD / REPLACE contact image
+router.post("/:id/image", upload.single("image"), async (req, res) => {
+  try {
+    const contact = await prisma.contact.findFirst({
+      where: {
+        id: Number(req.params.id),
+        userId: req.user.id
+      }
+    });
+
+    if (!contact) {
+      return res.status(404).json({
+        error: "Contact not found"
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        error: "No image uploaded"
+      });
+    }
+
+    // Delete previous avatar (if there is one)
+    if (contact.imageUrl) {
+      const oldPath = path.join(
+        process.cwd(),
+        "src",
+        contact.imageUrl.replace(/^\/+/, "")
+      );
+
+      try {
+        await fs.unlink(oldPath);
+      } catch {
+        // Ignore if file doesn't exist
+      }
+    }
+
+    // Save resized image
+    const filename = `${Date.now()}.jpg`;
+
+    const outputPath = path.join(
+      process.cwd(),
+      "src",
+      "uploads",
+      filename
+    );
+
+    await sharp(req.file.path)
+      .resize(300, 300, {
+        fit: "cover",
+        position: "center"
+      })
+      .jpeg({
+        quality: 90
+      })
+      .toFile(outputPath);
+
+    // Remove temporary uploaded file
+    await fs.unlink(req.file.path);
+
+    const updatedContact = await prisma.contact.update({
+      where: {
+        id: contact.id
+      },
+      data: {
+        imageUrl: `/uploads/${filename}`,
+        lastActivityAt: new Date()
+      },
+      include: {
+        timestampedNotes: true
+      }
+    });
+
+    res.json(updatedContact);
+
+  } catch (err) {
+    console.error("Error uploading image:", err);
+
+    res.status(500).json({
+      error: "Failed to upload image"
+    });
+  }
+});
+
+// REMOVE contact image (reset to default)
+router.delete("/:id/image", async (req, res) => {
+  try {
+    const contact = await prisma.contact.findFirst({
+      where: {
+        id: Number(req.params.id),
+        userId: req.user.id
+      }
+    });
+
+    if (!contact) {
+      return res.status(404).json({
+        error: "Contact not found"
+      });
+    }
+
+    const updatedContact = await prisma.contact.update({
+      where: {
+        id: contact.id
+      },
+      data: {
+        imageUrl: null,
+        lastActivityAt: new Date()
+      },
+      include: {
+        timestampedNotes: true
+      }
+    });
+
+    res.json(updatedContact);
+
+  } catch (err) {
+    console.error("Error removing image:", err);
+
+    res.status(500).json({
+      error: "Failed to remove image"
+    });
+  }
+});
 
 // DELETE note
 router.delete("/:contactId/notes/:noteId", async (req, res) => {
@@ -280,6 +444,15 @@ router.delete("/:contactId/notes/:noteId", async (req, res) => {
     const deletedNote = await prisma.note.delete({
       where: {
         id: note.id
+      }
+    });
+
+    await prisma.contact.update({
+      where: {
+        id: contact.id
+      },
+      data: {
+        lastActivityAt: new Date()
       }
     });
 

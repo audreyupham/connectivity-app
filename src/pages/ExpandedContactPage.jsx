@@ -194,6 +194,34 @@ export default function ExpandedContactPage() {
     setError(null);
   }
 
+  //remove image & reset to default
+  async function handleRemoveImage() {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    setError(null);
+
+    try {
+      const { ok, data, status } = await api.del(
+        `/contacts/${contact.id}/image`
+      );
+
+      if (!ok) {
+        setError(data || { message: `Error ${status}` });
+        return;
+      }
+
+      setContact(data);
+
+    } catch (err) {
+      setError({
+        message: err.message
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   async function handleDeleteContact(id) {
     if (!id) return;
     if (!window.confirm("Delete this contact? This cannot be undone.")) return;
@@ -232,6 +260,8 @@ export default function ExpandedContactPage() {
       onEditNote={handleEditNote}
       onDeleteNote={handleDeleteNote}
       onDeleteContact={handleDeleteContact}
+      onImageUploaded={(updated) => setContact(updated)}
+      onRemoveImage={handleRemoveImage}
       isSaving={isSaving}
       error={error}
     />

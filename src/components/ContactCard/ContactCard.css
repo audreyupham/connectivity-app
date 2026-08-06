@@ -16,12 +16,22 @@
     overflow: hidden;     /* prevents layout breaking */
 }
 
+.contact-card:hover {
+    color: black;
+    background: #d0c8df;
+    box-shadow: 0 8px 20px rgba(0,0,0,.12);
 
-.avatar {
+    transition:
+        background .2s ease,
+        color .2s ease;
+}
+
+.contact-card-avatar {
   width: 60px;
   height: 60px;
   border-radius: 50%;
   object-fit: cover;
+  object-position: center;
 }
 
 .contact-info h3 {
