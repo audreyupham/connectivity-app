@@ -15,7 +15,7 @@ export default function ContactCard({contact, generalNotes}) {
             />
             <div className="contact-info">
                 <h3>{contact.name}</h3>
-                <p className="contact-subtext">
+                <p>
                     {contact.generalNotes || "No additonal details yet."}
                 </p>
             </div>

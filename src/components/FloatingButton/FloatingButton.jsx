@@ -6,7 +6,9 @@ import { Link } from "react-router-dom";
 export default function FloatingButton() {
     return (
         <Link to='/create-new' className="create-new">
-            <button><strong>+</strong></button>
+            <button>
+                <strong>+</strong>
+            </button>
         </Link>
         
     );

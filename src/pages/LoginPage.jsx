@@ -20,7 +20,12 @@ export default function LoginPage() {
     }
 
     localStorage.setItem("accessToken", res.data.accessToken);
-    navigate("/contacts");
+    //go to most recent page (good for refreshes)
+    const params = new URLSearchParams(window.location.search);
+
+    const redirect = params.get("redirect") || "/contacts";
+
+    navigate(redirect, { replace: true });
   }
 
   return (

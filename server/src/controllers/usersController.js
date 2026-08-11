@@ -2,6 +2,12 @@ import prisma from "../db.js";
 
 export async function updateUser(req, res) {
   try {
+    if (!req.body.name || req.body.name.trim() === "") {
+      return res.status(400).json({
+        error: "Name cannot be empty"
+      });
+    }
+
     const user = await prisma.user.update({
       where: {
         id: req.user.id
@@ -10,12 +16,6 @@ export async function updateUser(req, res) {
         name: req.body.name
       }
     });
-
-    if (!req.body.name || req.body.name.trim() === "") {
-      return res.status(400).json({
-        error: "Name cannot be empty"
-      });
-    }
     
     res.json({
       id: user.id,

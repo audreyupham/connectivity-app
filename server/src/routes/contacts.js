@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
   try {
     const contacts = await prisma.contact.findMany({
       where: {
-        userId: req.user.id
+        userId: req.user.id,
       },
       include: {
         timestampedNotes: true
@@ -37,6 +37,73 @@ router.get("/", async (req, res) => {
   }
 });
 
+//searchbar
+router.get("/search", async (req, res) => {
+  try {
+    const search = req.query.q?.trim();
+
+    if (!search) {
+      return res.json([]);
+    }
+
+    const contacts = await prisma.contact.findMany({
+      where: {
+        userId: req.user.id,
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: "insensitive"
+            }
+          },
+          {
+            generalNotes: {
+              contains: search,
+              mode: "insensitive"
+            }
+          },
+          {
+            timestampedNotes: {
+              some: {
+                text: {
+                  contains: search,
+                  mode: "insensitive"
+                }
+              }
+            }
+          }
+        ]
+      },
+
+      include: {
+        timestampedNotes: {
+          where: {
+            text: {
+              contains: search,
+              mode: "insensitive"
+            }
+          },
+          orderBy: {
+            timestamp: "desc"
+          },
+          take: 3
+        }
+      },
+
+      orderBy: {
+        lastActivityAt: "desc"
+      }
+    });
+
+    res.json(contacts);
+
+  } catch (err) {
+    console.error("Search failed:", err);
+    res.status(500).json({
+      error: "Search failed"
+    });
+  }
+});
 
 // GET one contact
 router.get("/:id", async (req, res) => {
@@ -66,7 +133,7 @@ router.get("/:id", async (req, res) => {
     });
   }
 });
-
+  
 
 // CREATE contact
 router.post("/", async (req, res) => {

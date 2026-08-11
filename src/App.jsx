@@ -1,10 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+import ProtectedRoutes from "./components/ProtectedRoutes";
+
 import LoginLayout from "./layout/LoginLayout";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ResetPasswordConfirmPage from "./pages/ResetPasswordConfirmPage";
+import SearchResultsPage from "./pages/SearchResultsPage";
 
 import Layout from "./layout/Layout";
 import ContactsPage from "./pages/ContactsPage";
@@ -85,45 +88,55 @@ export default function App() {
         <Route
           path="/contacts"
           element={
-            <Layout>
-              <ContactsPage />
-            </Layout>
+            <ProtectedRoutes>
+              <Layout>
+                <ContactsPage />
+              </Layout>
+            </ProtectedRoutes>
           }
         />
 
         <Route
           path="/contacts/:id"
           element={
-            <Layout showFloatingButton={false}>
-              <ExpandedContactPage />
-            </Layout>
+            <ProtectedRoutes>
+              <Layout showFloatingButton={false}>
+                <ExpandedContactPage />
+              </Layout>
+            </ProtectedRoutes>
           }
         />
 
         <Route
           path="/create-new"
           element={
-            <Layout>
-              <CreateNewPage />
-            </Layout>
+            <ProtectedRoutes>
+              <Layout>
+                <CreateNewPage />
+              </Layout>
+            </ProtectedRoutes>
           }
         />
 
         <Route
           path="/ai-search"
           element={
-            <Layout>
-              <AISearchPage />
-            </Layout>
+            <ProtectedRoutes>
+              <Layout>
+                <AISearchPage />
+              </Layout>
+            </ProtectedRoutes>
           }
         />
 
         <Route
           path="/profile"
           element={
-            <Layout>
-              <ProfileSettingsPage />
-            </Layout>
+            <ProtectedRoutes>
+              <Layout>
+                <ProfileSettingsPage />
+              </Layout>
+            </ProtectedRoutes>
           }
         />
 
@@ -141,6 +154,17 @@ export default function App() {
               <LoginPage />
             </LoginLayout>
           }
+        />
+
+        <Route
+          path="/search"
+          element={
+            <ProtectedRoutes>
+              <Layout>
+                <SearchResultsPage />
+              </Layout>
+            </ProtectedRoutes>
+            }
         />
 
       </Routes>

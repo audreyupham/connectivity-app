@@ -1,14 +1,14 @@
 .note-item {
   position: relative;
-  padding: 12px;
+  padding: 10px;
+  
+  width: 85%;
+  margin: 0 auto;
+  border-radius: 16px;
 }
 
-.note-actions {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
+.note-item:hover {
+  background-color: rgba(129, 126, 126, 0.04);
 }
 
 .note-actions {
@@ -66,13 +66,14 @@
 }
 
 .note-timestamp {
-  font-size: 1rem;
+  font-size: 0.8rem;
   margin-bottom: 6px;
   display: block;
   color: black;
 }
 
 .note-text {
-    font-size: 1.3rem;
+    font-size: 1rem;
     color: black;
+    line-height: 1.2;
 }

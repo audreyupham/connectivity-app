@@ -19,6 +19,10 @@ export default async function authMiddleware(req, res, next) {
     next();
   } catch (err) {
     console.error("Auth error:", err);
-    res.status(401).json({ error: "Unauthorized" });
+    return res.status(401).json({
+      error: err.name === "TokenExpiredError"
+        ? "Session expired"
+        : "Unauthorized"
+    });
   }
 }

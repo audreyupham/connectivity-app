@@ -22,7 +22,7 @@ const upload = multer({
     fileSize: 2 * 1024 * 1024
   },
   fileFilter(req, file, cb) {
-    if (!file.allowedTypes) {
+    if (!allowedTypes.includes(file.mimetype)) {
       return cb(new Error("Only images allowed"));
     }
 

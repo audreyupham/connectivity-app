@@ -65,7 +65,7 @@ export default function ProfileSettingsPage() {
       <div className="profile-card">
 
         <h1 className="profile-title">
-          Profile Settings
+          Settings
         </h1>
 
         {error && <p className="error">{error}</p>}

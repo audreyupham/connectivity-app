@@ -62,9 +62,11 @@ export default function ExpandedContactHeader({
         className="contact-avatar"
       />
 
-      <h2 className="contact-name">
-        {contact?.name ?? ""}
-      </h2>
+      {mode === "view" && (
+        <h2 className="contact-name">
+          {contact?.name ?? ""}
+        </h2>
+      )}
     </div>
   );
 }

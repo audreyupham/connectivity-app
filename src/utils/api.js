@@ -1,44 +1,61 @@
 const BASE = import.meta.env.VITE_API_BASE || "http://localhost:3001";
 
+let refreshPromise = null;
+
 function logout() {
   localStorage.removeItem("accessToken");
-
-  // optional cleanup if you store user info later
   localStorage.removeItem("user");
 
   if (window.location.pathname !== "/login") {
-    window.location.href = "/login";
+    const currentPath =
+      window.location.pathname + window.location.search;
+
+    window.location.href =
+      `/login?redirect=${encodeURIComponent(currentPath)}`;
   }
 }
 
+async function searchContacts(query) {
+  return get(`/contacts/search?q=${encodeURIComponent(query)}`);
+}
+
 async function refreshToken() {
-  try {
-    const refreshRes = await fetch(`${BASE}/auth/refresh`, {
-      method: "POST",
-      credentials: "include"
-    });
-
-    if (!refreshRes.ok) {
-      return false;
-    }
-
-    const data = await refreshRes.json();
-
-    if (!data.accessToken) {
-      return false;
-    }
-
-    localStorage.setItem(
-      "accessToken",
-      data.accessToken
-    );
-
-    return true;
-
-  } catch (err) {
-    console.error("Refresh failed:", err);
-    return false;
+  if (refreshPromise) {
+    return refreshPromise;
   }
+
+  refreshPromise = (async () => {
+    try {
+      const refreshRes = await fetch(`${BASE}/auth/refresh`, {
+        method: "POST",
+        credentials: "include"
+      });
+
+      if (!refreshRes.ok) {
+        return false;
+      }
+
+      const data = await refreshRes.json();
+
+      if (!data.accessToken) {
+        return false;
+      }
+
+      localStorage.setItem(
+        "accessToken",
+        data.accessToken
+      );
+
+      return true;
+    } catch (err) {
+      console.error("Refresh failed:", err);
+      return false;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
 }
 
 async function request(path, opts = {}, retry = true) {
@@ -189,5 +206,6 @@ export default {
   get,
   post,
   put,
-  del
+  del,
+  searchContacts
 };

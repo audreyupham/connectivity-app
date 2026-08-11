@@ -9,6 +9,7 @@ export default function ContactsPage() {
   const navigate = useNavigate();
   const [contacts, setContacts] = useState([]);
   const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     let mounted = true;
@@ -29,11 +30,9 @@ export default function ContactsPage() {
       <div className="contacts-search-wrapper">
         <SearchBar
           contacts={contacts}
+          searchMode="information"
           onSelectContact={(contact) =>
             navigate(`/contacts/${contact.id}`)
-          }
-          onCreateNewContact={(name) =>
-            navigate(`/create-new?name=${encodeURIComponent(name)}`)
           }
         />
       </div>

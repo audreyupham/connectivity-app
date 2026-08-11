@@ -4,6 +4,7 @@ import Label from "../Label";
 import TextField from "../TextField";
 import TextAreaField from "../TextAreaField";
 import TimestampedNotesList from "../TimestampedNotesList";
+import { useNavigate } from "react-router-dom";
 
 export default function ContactDetailsLayout({
   contact,
@@ -23,63 +24,41 @@ export default function ContactDetailsLayout({
   isSaving = false,
   error = null
 }) {
-
+  const navigate = useNavigate();
+  
   function ActionToolbar() {
     return (
       <div className="contact-toolbar">
-        <div className="toolbar-left">
+        {mode === "view" && (
+          <button onClick={onEdit}>
+            Edit
+          </button>
+        )}
 
-          {mode === "view" && (
-            <button onClick={onBack}>
-              Back
-            </button>
-          )}
+        {(mode === "edit" ||
+          mode === "add-note" ||
+          mode === "edit-note" ||
+          mode === "create") && (
+          <button
+            onClick={onSave}
+            disabled={isSaving}
+          >
+            Save
+          </button>
+        )}
 
-          {(mode === "edit" ||
-            mode === "add-note" ||
-            mode === "edit-note" ||
-            mode === "create") && (
-            <button
-              onClick={onCancel}
-              disabled={isSaving}
-            >
-              Cancel
-            </button>
-          )}
-        </div>
-
-        <div className="toolbar-right">
-          {mode === "view" && (
-            <button onClick={onEdit}>
-              Edit
-            </button>
-          )}
-
-          {(mode === "edit" ||
-            mode === "add-note" ||
-            mode === "edit-note" ||
-            mode === "create") && (
-            <button
-              onClick={onSave}
-              disabled={isSaving}
-            >
-              Save
-            </button>
-          )}
-
-          {mode !== "create" && (
-            <button
-              className="delete"
-              onClick={() =>
-                onDeleteContact &&
-                onDeleteContact(contact?.id)
-              }
-              disabled={isSaving}
-            >
-              Delete
-            </button>
-          )}
-        </div>
+        {mode !== "create" && mode !== "edit-note" && mode !== "add-note" && (
+          <button
+            className="delete"
+            onClick={() =>
+              onDeleteContact &&
+              onDeleteContact(contact?.id)
+            }
+            disabled={isSaving}
+          >
+            Delete
+          </button>
+        )}
       </div>
     );
   }
@@ -95,7 +74,26 @@ export default function ContactDetailsLayout({
 
   return (
     <div className="contact-details-layout">
+      <div className="floating-back-button">
+          {mode === "view" && (
+            <button onClick={onBack}>
+              ⇦
+            </button>
+          )}
 
+          {(mode === "edit" ||
+            mode === "add-note" ||
+            mode === "edit-note" ||
+            mode === "create") && (
+            <button
+              onClick={onCancel}
+              disabled={isSaving}
+            >
+              ⇦
+            </button>
+          )}
+        </div> 
+        
       <ActionToolbar />
 
       {error && (
@@ -193,6 +191,7 @@ export default function ContactDetailsLayout({
               mode === "edit" ||
               mode === "edit-note"
             }
+            className="timestamped-notes-list"
           />
 
           {mode === "view" && (
@@ -201,10 +200,9 @@ export default function ContactDetailsLayout({
               onClick={onAddNote}
               disabled={isSaving}
             >
-              +
+              <strong>+</strong>
             </button>
           )}
-
         </>
       )}
     </div>
