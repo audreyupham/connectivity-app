@@ -10,23 +10,25 @@ export default function ExpandedContactHeader({
 }) {
 
   async function handleImageUpload(e) {
-    const file = e.target.files[0];
+  const file = e.target.files?.[0];
 
-    if (!file) return;
+  if (!file) return;
 
-    const formData = new FormData();
+  const formData = new FormData();
+  formData.append("image", file);
 
-    formData.append("image", file);
+  const { ok, data } = await api.post(
+    `/contacts/${contact.id}/image`,
+    formData
+  );
 
-    const { ok, data } = await api.post(
-      `/contacts/${contact.id}/image`,
-      formData
-    );
-
-    if (ok) {
-      onImageUploaded(data);
-    }
+  if (ok) {
+    onImageUploaded(data);
+    e.target.value = "";
+  } else {
+    console.error("Image upload failed:", data);
   }
+}
 
   return (
     <div className="expanded-contact-header">
@@ -53,16 +55,12 @@ export default function ExpandedContactHeader({
       )}
 
       <img
-        src={
-          contact?.imageUrl
-            ? `http://localhost:3001${contact.imageUrl}`
-            : defaultAvatar
-        }
+        src={contact?.imageUrl || defaultAvatar}
         alt={`${contact.name}'s profile picture`}
         className="contact-avatar"
       />
 
-      {mode === "view" && (
+      {(mode === "view" || mode === "edit-note" || mode === "add-note") && (
         <h2 className="contact-name">
           {contact?.name ?? ""}
         </h2>

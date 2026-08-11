@@ -13,7 +13,7 @@ import Layout from "./layout/Layout";
 import ContactsPage from "./pages/ContactsPage";
 import ExpandedContactPage from "./pages/ExpandedContactPage";
 import CreateNewPage from "./pages/CreateNewPage";
-import AISearchPage from "./pages/AISearchPage";
+import SupportPage from "./pages/SupportPage";
 import ProfileSettingsPage from "./pages/ProfileSettingsPage";
 
 export default function App() {
@@ -119,11 +119,11 @@ export default function App() {
         />
 
         <Route
-          path="/ai-search"
+          path="/support"
           element={
             <ProtectedRoutes>
               <Layout>
-                <AISearchPage />
+                <SupportPage />
               </Layout>
             </ProtectedRoutes>
           }

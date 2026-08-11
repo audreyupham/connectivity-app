@@ -59,7 +59,7 @@ export default function SearchResultsPage() {
         className="back-button"
         onClick={() => navigate(-1)}
       >
-        ← Back
+        ⇦
       </button>
 
       <h1>

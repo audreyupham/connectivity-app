@@ -12,8 +12,8 @@
     border-radius: 8px;
 
     width: 200px;
-    height: 190px;        /* slightly shorter, more balanced */
-    overflow: hidden;     /* prevents layout breaking */
+    height: 190px;
+    overflow: hidden;
 }
 
 .contact-card:hover {
@@ -32,6 +32,7 @@
   border-radius: 50%;
   object-fit: cover;
   object-position: center;
+  flex-shrink: 0;
 }
 
 .contact-info h3 {
@@ -51,4 +52,55 @@
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 768px) {
+  .contact-card {
+    flex-direction: row;
+    align-items: center;
+
+    width: 100%;
+    height: auto;
+
+    min-height: 64px;
+
+    padding: 10px 14px;
+
+    border: none;
+    border-radius: 0;
+
+    gap: 12px;
+
+    box-shadow: none;
+  }
+
+  .contact-card-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .contact-info {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .contact-info h3 {
+    text-align: left;
+
+    font-size: 1rem;
+    line-height: 1.2;
+
+    margin: 0;
+  }
+
+  .contact-info p {
+    display: none;
+  }
+
+  .contact-card:hover {
+    background: #f3f0f7;
+    box-shadow: none;
+  }
 }

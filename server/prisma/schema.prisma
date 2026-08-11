@@ -11,6 +11,7 @@ model Contact {
   name             String
   generalNotes     String?
   imageUrl         String?
+  imagePublicId    String?
 
   lastActivityAt  DateTime @default(now())
 

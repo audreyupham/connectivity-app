@@ -97,7 +97,7 @@ export default function ProfileSettingsPage() {
             type="submit"
             className="profile-button"
           >
-            Save Name
+            Update Name
           </button>
         </form>
 

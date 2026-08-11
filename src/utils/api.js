@@ -1,4 +1,6 @@
-const BASE = import.meta.env.VITE_API_BASE || "http://localhost:3001";
+const BASE =
+  import.meta.env.VITE_API_BASE ||
+  "http://localhost:3001";
 
 let refreshPromise = null;
 
@@ -8,7 +10,8 @@ function logout() {
 
   if (window.location.pathname !== "/login") {
     const currentPath =
-      window.location.pathname + window.location.search;
+      window.location.pathname +
+      window.location.search;
 
     window.location.href =
       `/login?redirect=${encodeURIComponent(currentPath)}`;
@@ -16,7 +19,9 @@ function logout() {
 }
 
 async function searchContacts(query) {
-  return get(`/contacts/search?q=${encodeURIComponent(query)}`);
+  return get(
+    `/contacts/search?q=${encodeURIComponent(query)}`
+  );
 }
 
 async function refreshToken() {
@@ -26,10 +31,13 @@ async function refreshToken() {
 
   refreshPromise = (async () => {
     try {
-      const refreshRes = await fetch(`${BASE}/auth/refresh`, {
-        method: "POST",
-        credentials: "include"
-      });
+      const refreshRes = await fetch(
+        `${BASE}/auth/refresh`,
+        {
+          method: "POST",
+          credentials: "include"
+        }
+      );
 
       if (!refreshRes.ok) {
         return false;
@@ -61,26 +69,32 @@ async function refreshToken() {
 async function request(path, opts = {}, retry = true) {
   const url = `${BASE}${path}`;
 
-  const token = localStorage.getItem("accessToken");
+  const token =
+    localStorage.getItem("accessToken");
 
-  const isFormData = opts.body instanceof FormData;
+  const isFormData =
+    opts.body instanceof FormData;
+
+  const headers = {
+    ...(isFormData
+      ? {}
+      : {
+          "Content-Type": "application/json"
+        }),
+
+    ...(opts.headers || {}),
+
+    ...(token
+      ? {
+          Authorization: `Bearer ${token}`
+        }
+      : {})
+  };
 
   const init = {
+    ...opts,
     credentials: "include",
-    headers: {
-      ...(isFormData
-        ? {}
-        : {
-            "Content-Type": "application/json"
-          }),
-      ...(opts.headers || {}),
-      ...(token
-        ? {
-            Authorization: `Bearer ${token}`
-          }
-        : {})
-    },
-    ...opts
+    headers
   };
 
   try {
@@ -92,11 +106,9 @@ async function request(path, opts = {}, retry = true) {
       retry &&
       !path.includes("/auth/refresh")
     ) {
-
       const refreshed = await refreshToken();
 
       if (refreshed) {
-        // retry original request once
         return request(path, opts, false);
       }
 
@@ -122,6 +134,7 @@ async function request(path, opts = {}, retry = true) {
     const text = await res.text();
 
     let data;
+
     try {
       data = text
         ? JSON.parse(text)
@@ -137,12 +150,12 @@ async function request(path, opts = {}, retry = true) {
         data
       };
     }
+
     return {
       ok: true,
       status: res.status,
       data
     };
-
   } catch (err) {
     if (err?.name === "AbortError") {
       return {

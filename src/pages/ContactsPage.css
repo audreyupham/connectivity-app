@@ -1,14 +1,14 @@
 .contacts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    padding: 20px;
-    justify-items: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
 }
 
 .card-link {
-    color: black;
-    text-decoration: none;
+  color: black;
+  text-decoration: none;
 }
 
 .contacts-search-wrapper {
@@ -16,4 +16,27 @@
   display: flex;
   justify-content: center;
   padding: 40px 20px;
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 768px) {
+  .contacts-grid {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    gap: 1px;
+    padding: 10px 0;
+  }
+
+  .card-link {
+    display: block;
+    width: 100%;
+  }
+
+  .contacts-search-wrapper {
+    padding: 20px 0;
+  }
 }

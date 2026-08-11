@@ -8,13 +8,23 @@
     background-color: #4a2c82;
     border: none;
     color: white;
-    padding: 20px;
     text-align: center;
     font-size: 50px;
     border-radius: 50%;
+    padding: 2px;
     position: fixed;
     bottom: 5%;
     right: 5%;
     cursor: pointer;
-    width: 100px;
+    width: 80px;
+    height: 80px;
+}
+
+@media (max-width: 768px) {
+    .create-new button {
+        width: 60px;
+        height: 60px;
+        font-size: 30pt;
+        padding: 2px;
+    }
 }

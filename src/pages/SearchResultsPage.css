@@ -1,65 +1,153 @@
 .search-results-page {
-    max-width: 900px;
-    margin: auto;
-    padding: 40px 20px;
-    min-height: 100%;
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+  min-height: 100%;
+  line-height: 1.5;
 }
+
+/* ---------- Floating Back Button ---------- */
 
 .back-button {
-    padding: .9rem 2rem;
-    font-size: 1.1rem;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    color: white;
-    background: #4a2c82;
-    transition: background .2s ease;
-    margin-bottom: 20px;
+  position: fixed;
+  top: 24px;
+  left: 304px; /* 280px sidebar + 24px gap */
+
+  width: 64px;
+  height: 64px;
+
+  padding: 0;
+
+  z-index: 1001;
+
+  background-color: #4a2c82;
+  border: none;
+  border-radius: 50%;
+
+  color: white;
+  font-size: 30px;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
+
+.back-button:hover {
+  background-color: #3a2268;
+  transform: scale(1.05);
+}
+
+/* ---------- Results Count ---------- */
 
 .results-count {
-    color: #666;
-    margin-bottom: 30px;
+  color: #666;
+  margin-bottom: 30px;
 }
 
+/* ---------- Search Result Card ---------- */
+
 .search-result-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,.08);
-    transition: .2s;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .search-result-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
+/* ---------- Search Sections ---------- */
+
 .search-section {
-    margin-top: 15px;
+  margin-top: 15px;
 }
 
 .search-section h4 {
-    margin-bottom: 8px;
-    color: #4a2c82;
+  margin-bottom: 8px;
+  color: #4a2c82;
 }
+
+/* ---------- Matching Note ---------- */
 
 .matching-note {
-    border-left: 3px solid #4a2c82;
-    padding-left: 12px;
-    margin-top: 12px;
+  border-left: 3px solid #4a2c82;
+  padding-left: 12px;
+  margin-top: 12px;
 }
+
+/* ---------- Highlighted Search Text ---------- */
 
 mark {
-    background: #ffe97a;
-    padding: 0 2px;
-    border-radius: 3px;
+  background: #ffe97a;
+  padding: 0 2px;
+  border-radius: 3px;
 }
 
+/* ---------- Empty Results ---------- */
+
 .empty-results {
-    text-align: center;
-    margin-top: 60px;
-    color: #777;
+  text-align: center;
+  margin-top: 60px;
+  color: #777;
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 768px) {
+  .search-results-page {
+    padding: 20px 20px 30px;
+  }
+
+  /* ---------- Mobile Back Button ---------- */
+
+  .back-button {
+    top: 16px;
+    left: 72px;
+
+    width: 48px;
+    height: 48px;
+
+    z-index: 1001;
+
+    font-size: 26px;
+  }
+
+  /* ---------- Mobile Results ---------- */
+
+  .results-count {
+    margin-bottom: 20px;
+  }
+
+  .search-result-card {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .search-section {
+    margin-top: 12px;
+  }
+
+  .matching-note {
+    padding-left: 10px;
+  }
+
+  .empty-results {
+    margin-top: 40px;
+  }
 }
