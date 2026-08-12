@@ -4,7 +4,7 @@ import ProtectedRoutes from "./components/ProtectedRoutes";
 
 import LoginLayout from "./layout/LoginLayout";
 import LoginPage from "./pages/LoginPage";
-import SignUpPage from "./pages/SignUpPage";
+import SignUpPage from "./pages/SignupPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import ResetPasswordConfirmPage from "./pages/ResetPasswordConfirmPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
