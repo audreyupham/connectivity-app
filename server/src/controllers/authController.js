@@ -2,7 +2,7 @@ import prisma from "../db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { sendPasswordResetEmail } from "../../../src/utils/email.js";
+import { sendPasswordResetEmail } from "../utils/email.js";
 
 
 // Helper to generate tokens
