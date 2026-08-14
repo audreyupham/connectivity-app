@@ -33,7 +33,7 @@ export default function ExpandedContactHeader({
   return (
     <div className="expanded-contact-header">
 
-      {mode === "edit" && (
+      {(mode === "edit" || mode === "create") && (
         <div className="image-controls">
 
           <input

@@ -4,6 +4,7 @@
   padding: 20px;
   min-height: 100%;
   line-height: 1.5;
+  color: #444;
 }
 
 /* ---------- Floating Back Button ---------- */
@@ -54,6 +55,7 @@
 
 .search-result-card {
   background: white;
+  color: black;
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
@@ -73,13 +75,17 @@
 }
 
 /* ---------- Search Sections ---------- */
-
+h1, h2 {
+  color: black;
+  margin-bottom: 10px;
+}
 .search-section {
   margin-top: 15px;
+  color: black;
 }
 
 .search-section h4 {
-  margin-bottom: 8px;
+  margin: 8px;
   color: #4a2c82;
 }
 
@@ -128,6 +134,13 @@ mark {
     font-size: 26px;
   }
 
+  p {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
   /* ---------- Mobile Results ---------- */
 
   .results-count {
@@ -149,5 +162,6 @@ mark {
 
   .empty-results {
     margin-top: 40px;
+    color: black;
   }
 }

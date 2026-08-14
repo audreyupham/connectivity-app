@@ -10,6 +10,64 @@ const router = express.Router();
 router.use(authMiddleware);
 
 
+//GET FollowUps
+router.get("/followups", async (req, res) => {
+  try {
+    const followUps = await prisma.followUp.findMany({
+      where: { userId: req.user.id, completed: false },
+      include: { contact: true },
+      orderBy: {createdAt: "asc" }
+    });
+    res.status(200).json(followUps);
+  } catch (err) {
+    console.error("Error fetching followUps:", err);
+    res.status(500).json({
+      error: "Failed to get FollowUps"
+    });
+  }
+});
+
+//POST followup
+router.post("/followups", async (req, res) => {
+  try {
+    const { contactId, text } = req.body;
+
+    const followUp = await prisma.followUp.create({
+      data: {
+        text,
+        contactId,
+        userId: req.user.id
+        }
+      });
+      res.status(201).json(followUp);
+
+  } catch (err) {
+    console.error("Error creating Follow-Up:", err);
+    res.status(500).json({
+      error: "Failed to create followUp"
+    });
+  }
+});
+
+
+//UPDATE FollowUps
+router.put("/followups/:id/complete", async (req,res) => {
+  try {
+    const updated = await prisma.followUp.update({
+      where: {id: Number(req.params.id)},
+      data: { completed: true }
+    });
+    res.status(201).json(updated);
+
+  } catch (err) {
+    console.error("Error updating followUp:", err);
+    res.status(500).json({
+      error: "Failed to update followUp"
+    });
+  }
+});
+
+
 // GET all contacts for logged-in user
 router.get("/", async (req, res) => {
   try {
@@ -232,6 +290,17 @@ router.post("/:id/notes", async (req, res) => {
       });
     }
 
+    // If frontend sent followUpDraft, handle it here
+    if (req.body.followUpDraft && req.body.followUpDraft.trim() !== "") {
+      await prisma.followUp.create({
+        data: {
+          text: req.body.followUpDraft.trim(),
+          contactId: contact.id,
+          userId: req.user.id
+        }
+      });
+    }
+
     const newNote = await prisma.note.create({
       data: {
         text: req.body.text.trim(),
@@ -257,6 +326,8 @@ router.post("/:id/notes", async (req, res) => {
     });
   }
 });
+
+
 
 
 // UPDATE note
@@ -296,6 +367,15 @@ router.put("/:contactId/notes/:noteId", async (req, res) => {
       });
     }
 
+    if (req.body.followUpDraft && req.body.followUpDraft.trim() !== "") {
+      await prisma.followUp.create({
+        data: {
+          text: req.body.followUpDraft.trim(),
+          contactId: contact.id,
+          userId: req.user.id
+        }
+      });
+    }
 
     await prisma.note.update({
       where: {
@@ -338,102 +418,102 @@ router.put("/:contactId/notes/:noteId", async (req, res) => {
 
 // UPLOAD / REPLACE contact image
 router.post("/:id/image", upload.single("image"), async (req, res) => {
-try {
-const contact = await prisma.contact.findFirst({
-where: {
-id: Number(req.params.id),
-userId: req.user.id
-}
-});
-
-if (!contact) {
-  return res.status(404).json({
-    error: "Contact not found"
-  });
-}
-
-if (!req.file) {
-  return res.status(400).json({
-    error: "No image uploaded"
-  });
-}
-
-// Upload new image to Cloudinary
-const result = await new Promise((resolve, reject) => {
-  const uploadStream = cloudinary.uploader.upload_stream(
-    {
-      folder: "connectivity-app",
-      transformation: [
-        {
-          width: 300,
-          height: 300,
-          crop: "fill",
-          gravity: "center"
-        }
-      ],
-      format: "jpg",
-      quality: "auto"
-    },
-    (error, result) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(result);
-      }
-    }
-  );
-
-  uploadStream.end(req.file.buffer);
-});
-
-// Save the old Cloudinary public ID before replacing it
-const oldImagePublicId = contact.imagePublicId;
-
-// Save the new Cloudinary URL and public ID
-const updatedContact = await prisma.contact.update({
-  where: {
-    id: contact.id
-  },
-
-  data: {
-    imageUrl: result.secure_url,
-    imagePublicId: result.public_id,
-    lastActivityAt: new Date()
-  },
-
-  include: {
-    timestampedNotes: true
-  }
-});
-
-// Delete the old Cloudinary image after the new one
-// has successfully uploaded and been saved.
-if (oldImagePublicId) {
   try {
-    const deleteResult = await cloudinary.uploader.destroy(
-      oldImagePublicId
-    );
-
-    console.log("Cloudinary delete result:", deleteResult);
-    console.log("Old Cloudinary public ID:", oldImagePublicId);
-  } catch (deleteError) {
-    console.error(
-      "Could not delete old Cloudinary image:",
-      deleteError
-    );
+  const contact = await prisma.contact.findFirst({
+  where: {
+  id: Number(req.params.id),
+  userId: req.user.id
   }
-}
+  });
 
-res.json(updatedContact);
+  if (!contact) {
+    return res.status(404).json({
+      error: "Contact not found"
+    });
+  }
 
-} catch (err) {
-console.error("Error uploading image:", err);
+  if (!req.file) {
+    return res.status(400).json({
+      error: "No image uploaded"
+    });
+  }
 
-res.status(500).json({
-  error: "Failed to upload image"
-});
+  // Upload new image to Cloudinary
+  const result = await new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "connectivity-app",
+        transformation: [
+          {
+            width: 300,
+            height: 300,
+            crop: "fill",
+            gravity: "center"
+          }
+        ],
+        format: "jpg",
+        quality: "auto"
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
 
-}
+    uploadStream.end(req.file.buffer);
+  });
+
+  // Save the old Cloudinary public ID before replacing it
+  const oldImagePublicId = contact.imagePublicId;
+
+  // Save the new Cloudinary URL and public ID
+  const updatedContact = await prisma.contact.update({
+    where: {
+      id: contact.id
+    },
+
+    data: {
+      imageUrl: result.secure_url,
+      imagePublicId: result.public_id,
+      lastActivityAt: new Date()
+    },
+
+    include: {
+      timestampedNotes: true
+    }
+  });
+
+  // Delete the old Cloudinary image after the new one
+  // has successfully uploaded and been saved.
+  if (oldImagePublicId) {
+    try {
+      const deleteResult = await cloudinary.uploader.destroy(
+        oldImagePublicId
+      );
+
+      console.log("Cloudinary delete result:", deleteResult);
+      console.log("Old Cloudinary public ID:", oldImagePublicId);
+    } catch (deleteError) {
+      console.error(
+        "Could not delete old Cloudinary image:",
+        deleteError
+      );
+    }
+  }
+
+  res.json(updatedContact);
+
+  } catch (err) {
+  console.error("Error uploading image:", err);
+
+  res.status(500).json({
+    error: "Failed to upload image"
+  });
+
+  }
 });
 
 // REMOVE contact image

@@ -23,6 +23,8 @@ h3 {
   line-height: 2; 
   width: 80%; 
   text-align: center; 
+  background-color: #F5F7FA;
+  color: #444;
 }
 
 
@@ -124,12 +126,13 @@ h3 {
   padding: 0.7rem;
   border-radius: 8px;
   border: 1px solid #ddd;
+  color: #444;
 }
 
 
 /* ---------- Inputs ---------- */
 
-.field-input,
+.field-input, input,
 .field-textarea {
   width: 100%;
   padding: 1rem;
@@ -137,10 +140,18 @@ h3 {
   font-family: "Segoe UI", sans-serif;
   border-radius: 8px;
   border: 1px solid #ccc;
+  background-color: #FFFFFF;
+  color: black;
 }
 
 .field-textarea {
   resize: vertical;
+  background-color: #FFFFFF;
+  color: black;
+}
+
+textarea {
+  color: black;
 }
 
 
@@ -151,6 +162,10 @@ h3 {
   padding: 1rem;
   border-radius: 16px;
   box-shadow: 0 8px 25px rgba(0,0,0,.08);
+}
+
+.notes-title {
+  color: #444;
 }
 /* ---------- Floating Back Button ---------- */
 
@@ -213,10 +228,6 @@ h3 {
   transition: background .2s ease, color .2s ease;
 }
 
-.floating-add-button:hover {
-  /*TODO*/
-}
-
 
 /* ---------- Avatar ---------- */
 
@@ -232,6 +243,18 @@ h3 {
 .contact-name {
   font-size: 20pt;
   line-height: 1.2;
+  color: black;
+}
+
+/* Fix autofill background in dark mode */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  box-shadow: 0 0 0px 1000px white inset !important;
+  -webkit-text-fill-color: #000 !important;
+  caret-color: #000;
 }
 
 
@@ -244,6 +267,7 @@ h3 {
 
   .field {
     padding: 1.75rem;
+    color: #FFFFFF
   }
 }
 
@@ -277,9 +301,6 @@ h3 {
     top: 16px;
     left: 72px;
 
-    width: 48px !important;
-    height: 48px;
-
     z-index: 1001;
   }
 
@@ -297,6 +318,13 @@ h3 {
     align-items: center;
     justify-content: center;
   }
+
+  /* Hide back button and toolbar when sidebar is open */
+  body.sidebar-open .floating-back-button,
+  body.sidebar-open .contact-toolbar {
+    display: none !important;
+  }
+
 
   /* ---------- Edit / Delete ---------- */
 

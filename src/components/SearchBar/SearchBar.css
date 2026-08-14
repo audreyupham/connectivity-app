@@ -15,8 +15,10 @@
   
   border-radius: 50px;
   border: 1px solid #e0e0e0;
+  background-color: #FFFFFF;
   font-size: 14px;
   box-sizing: border-box;
+  color: black;
 }
 
 /* suggestions overlay (absolute so it doesn't push content) */
@@ -37,6 +39,7 @@
   flex-direction: column;
   gap: 8px;
   font-size: 12pt;
+  color: #444444
 }
 
 /* hidden state */

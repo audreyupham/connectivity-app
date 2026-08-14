@@ -4,6 +4,7 @@ import Label from "../Label";
 import TextField from "../TextField";
 import TextAreaField from "../TextAreaField";
 import TimestampedNotesList from "../TimestampedNotesList";
+import { useState } from "react";
 
 export default function ContactDetailsLayout({
   contact,
@@ -23,6 +24,8 @@ export default function ContactDetailsLayout({
   isSaving = false,
   error = null
 }) {
+  const [showFollowUp, setShowFollowUp] = useState(false);
+  
 
   // Save timestamped note.
   // If the note is empty, simply cancel instead.
@@ -211,6 +214,13 @@ export default function ContactDetailsLayout({
                   onChange("newNote", val)
                 }
               />
+              {showFollowUp && (
+                <TextAreaField
+                  label="Follow-Up Reminder"
+                  value={contactDraft.followUpDraft}
+                  onChange={(val) => onChange("followUpDraft", val)}
+                />
+              )}
 
               <div className="note-editor-actions">
 
@@ -223,6 +233,17 @@ export default function ContactDetailsLayout({
                 >
                   Cancel
                 </button>
+
+                {/* FollowUp */}
+                <button
+                  type="button"
+                  className="followup-button"
+                  onClick={() => setShowFollowUp(true)}
+                >
+                  Add Follow-Up
+                </button>
+
+                
 
                 {/* Save */}
                 <button
@@ -241,10 +262,14 @@ export default function ContactDetailsLayout({
               </div>
             </div>
           )}
+          
+
+          
+
 
           {/* ---------- Notes ---------- */}
 
-          <h3>Notes</h3>
+          <h3 className="notes-title">Notes</h3>
 
           <TimestampedNotesList
             notes={contact?.timestampedNotes || []}

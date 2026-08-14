@@ -15,6 +15,7 @@ import ExpandedContactPage from "./pages/ExpandedContactPage";
 import CreateNewPage from "./pages/CreateNewPage";
 import SupportPage from "./pages/SupportPage";
 import ProfileSettingsPage from "./pages/ProfileSettingsPage";
+import FollowUpPage from "./pages/FollowUpPage";
 
 export default function App() {
   return (
@@ -135,6 +136,17 @@ export default function App() {
             <ProtectedRoutes>
               <Layout>
                 <ProfileSettingsPage />
+              </Layout>
+            </ProtectedRoutes>
+          }
+        />
+
+        <Route
+          path="/followups"
+          element={
+            <ProtectedRoutes>
+              <Layout showFloatingButton={false}>
+                <FollowUpPage />
               </Layout>
             </ProtectedRoutes>
           }

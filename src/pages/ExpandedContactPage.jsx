@@ -13,6 +13,7 @@ export default function ExpandedContactPage() {
     name: "",
     generalNotes: "",
     newNote: "",
+    followUpDraft: "",
     editingNoteId: null
   });
   const [mode, setMode] = useState("view"); // view, edit, add-note, edit-note, create
@@ -72,7 +73,9 @@ export default function ExpandedContactPage() {
       try {
         const { ok, data, status } = await api.put(
           `/contacts/${contact.id}/notes/${draft.editingNoteId}`,
-          { text: draft.newNote }
+          { text: draft.newNote,
+            followUpDraft: draft.followUpDraft
+           }
         );
 
         if (!ok) {
@@ -96,7 +99,10 @@ export default function ExpandedContactPage() {
     // ADD NOTE MODE
     if (mode === "add-note") {
       try {
-        const { ok, data, status } = await api.post(`/contacts/${contact.id}/notes`, { text: draft.newNote });
+        const { ok, data, status } = await api.post(`/contacts/${contact.id}/notes`, { 
+          text: draft.newNote,
+          followUpDraft: draft.followUpDraft || "" 
+        });
         if (!ok) {
           setError(data || { message: `Error ${status}` });
           return;

@@ -1,21 +1,54 @@
 import "./Sidebar.css";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import api from "../../utils/api";
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
+  const openSidebar = () => {
+    setIsOpen(true);
+    document.body.classList.add("sidebar-open");
+  };
+
   const closeSidebar = () => {
     setIsOpen(false);
+    document.body.classList.remove("sidebar-open");
   };
+
+
+  const [followUpCount, setFollowUpCount] = useState(0);
+
+  useEffect(() => {
+    async function loadFollowUps() {
+      const res = await api.get("/contacts/followups");
+      if (res.ok) {
+        setFollowUpCount(res.data.length);
+      }
+    }
+    loadFollowUps();
+  }, []);
+
+  useEffect(() => {
+    function handleFollowUpCompleted() {
+      setFollowUpCount(c => Math.max(0, c - 1));
+    }
+
+    window.addEventListener("followup-completed", handleFollowUpCompleted);
+
+    return () => {
+      window.removeEventListener("followup-completed", handleFollowUpCompleted);
+    };
+  }, []);
+
 
   return (
     <>
       {/* Mobile menu button */}
       <button
         className="sidebar-toggle"
-        onClick={() => setIsOpen(true)}
+        onClick={openSidebar}
         aria-label="Open navigation menu"
         aria-expanded={isOpen}
       >
@@ -57,10 +90,10 @@ export default function Sidebar() {
               Create New
             </Link>
           </p>
-
+          
           <p>
-            <Link to="/profile" onClick={closeSidebar}>
-              Account
+            <Link to="/followups" onClick={closeSidebar}>
+              Follow-Ups {followUpCount > 0 && `(${followUpCount})`}
             </Link>
           </p>
 
@@ -69,6 +102,14 @@ export default function Sidebar() {
               Support
             </Link>
           </p>
+
+          <p>
+            <Link to="/profile" onClick={closeSidebar}>
+              Account
+            </Link>
+          </p>
+
+
         </nav>
       </aside>
     </>
