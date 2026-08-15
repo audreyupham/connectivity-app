@@ -16,6 +16,7 @@ export default function FollowUpPage({ onFollowUpCompleted }) {
 
       if (res.ok) {
         setFollowUps(res.data);
+        window.dispatchEvent(new Event("followup-changed"));
       }
 
       setLoading(false);
@@ -48,7 +49,7 @@ export default function FollowUpPage({ onFollowUpCompleted }) {
     <div className="followup-page">
 
       { <button className="back-button" onClick={() => navigate("/contacts")}>
-        ⇦
+        🠜
       </button>
       }
 

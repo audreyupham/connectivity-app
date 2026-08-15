@@ -25,7 +25,17 @@ export default function SignUpPage() {
       return;
     }
 
-    navigate("/login");
+    localStorage.setItem(
+      "accessToken",
+      res.data.accessToken
+    );
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify(res.data.user)
+    );
+
+    navigate("/terms", { replace: true });
   }
 
   return (

@@ -19,11 +19,28 @@ export default function LoginPage() {
       return;
     }
 
-    localStorage.setItem("accessToken", res.data.accessToken);
-    //go to most recent page (good for refreshes)
-    const params = new URLSearchParams(window.location.search);
+    localStorage.setItem(
+      "accessToken",
+      res.data.accessToken
+    );
 
-    const redirect = params.get("redirect") || "/contacts";
+    localStorage.setItem(
+      "user",
+      JSON.stringify(res.data.user)
+    );
+
+    if (!res.data.user.termsAccepted) {
+      navigate("/terms", { replace: true });
+      return;
+    }
+
+    // go to most recent page
+    const params = new URLSearchParams(
+      window.location.search
+    );
+
+    const redirect =
+      params.get("redirect") || "/contacts";
 
     navigate(redirect, { replace: true });
   }

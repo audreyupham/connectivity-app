@@ -37,6 +37,8 @@ export default function ContactDetailsLayout({
       return;
     }
 
+    setShowFollowUp(false);
+
     onSave();
   }
 
@@ -98,7 +100,7 @@ export default function ContactDetailsLayout({
 
         {mode === "view" && (
           <button onClick={onBack}>
-            ⇦
+            🠜
           </button>
         )}
 
@@ -130,14 +132,17 @@ export default function ContactDetailsLayout({
 
       {/* ---------- Contact Header ---------- */}
 
-      {contact && (
-        <ExpandedContactHeader
-          contact={contact}
-          mode={mode}
-          onImageUploaded={onImageUploaded}
-          onRemoveImage={onRemoveImage}
-        />
-      )}
+      <ExpandedContactHeader
+        contact={
+          contact || {
+            name: contactDraft.name,
+            imageUrl: contactDraft.imagePreview || null
+          }
+        }
+        mode={mode}
+        onImageUploaded={onImageUploaded}
+        onRemoveImage={onRemoveImage}
+      />
 
       {/* ---------- CREATE MODE ---------- */}
 
@@ -223,27 +228,30 @@ export default function ContactDetailsLayout({
               )}
 
               <div className="note-editor-actions">
-
                 {/* Cancel */}
                 <button
                   type="button"
                   className="note-cancel-button"
-                  onClick={onCancel}
+                  onClick={() => {
+                    onCancel();
+                    setShowFollowUp(false);
+                  }}
                   disabled={isSaving}
                 >
                   Cancel
                 </button>
 
-                {/* FollowUp */}
-                <button
-                  type="button"
-                  className="followup-button"
-                  onClick={() => setShowFollowUp(true)}
-                >
-                  Add Follow-Up
-                </button>
 
-                
+                {/* FollowUp */}
+                {!showFollowUp && (
+                  <button
+                    type="button"
+                    className="followup-button"
+                    onClick={() => setShowFollowUp(true)}
+                  >
+                    Add Follow-Up
+                  </button>
+                )}                
 
                 {/* Save */}
                 <button
@@ -263,9 +271,6 @@ export default function ContactDetailsLayout({
             </div>
           )}
           
-
-          
-
 
           {/* ---------- Notes ---------- */}
 

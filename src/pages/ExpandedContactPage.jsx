@@ -99,27 +99,48 @@ export default function ExpandedContactPage() {
     // ADD NOTE MODE
     if (mode === "add-note") {
       try {
-        const { ok, data, status } = await api.post(`/contacts/${contact.id}/notes`, { 
-          text: draft.newNote,
-          followUpDraft: draft.followUpDraft || "" 
-        });
+        const { ok, data, status } = await api.post(
+          `/contacts/${contact.id}/notes`,
+          {
+            text: draft.newNote,
+            followUpDraft: draft.followUpDraft || ""
+          }
+        );
+
         if (!ok) {
           setError(data || { message: `Error ${status}` });
           return;
         }
 
-        // safe update: handle missing timestampedNotes
+        // Update the contact with the new note
         setContact(prev => ({
           ...prev,
-          timestampedNotes: [...(prev.timestampedNotes || []), data]
+          timestampedNotes: [
+            ...(prev.timestampedNotes || []),
+            data
+          ]
         }));
 
-        setDraft(prev => ({ ...prev, newNote: "" }));
+        // Tell the Sidebar that a follow-up was created
+        if (draft.followUpDraft?.trim()) {
+          window.dispatchEvent(
+            new Event("followup-created")
+          );
+        }
+
+        setDraft(prev => ({
+          ...prev,
+          newNote: "",
+          followUpDraft: ""
+        }));
+
         setMode("view");
         return;
+
       } catch (err) {
         setError({ message: err.message });
         return;
+
       } finally {
         setIsSaving(false);
       }
@@ -260,7 +281,15 @@ export default function ExpandedContactPage() {
       onChange={handleChange}
       onSave={handleSave}
       onEdit={() => setMode("edit")}
-      onAddNote={() => setMode("add-note")}
+      onAddNote={() => {
+        setDraft(prev => ({
+          ...prev,
+          newNote: "",
+          followUpDraft: "",
+          editingNoteId: null
+        }));
+        setMode("add-note");
+      }}
       onBack={() => navigate("/contacts")}
       onCancel={handleCancel}
       onEditNote={handleEditNote}

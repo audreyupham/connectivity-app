@@ -20,19 +20,51 @@ export async function register(req, res) {
   try {
     const { email, password, name } = req.body;
 
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) return res.status(400).json({ error: "Email already exists" });
+    const existing = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        error: "Email already exists"
+      });
+    }
 
     const hashed = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
-      data: { email, password: hashed, name }
+      data: {
+        email,
+        password: hashed,
+        name
+      }
     });
 
-    res.json({ id: user.id, email: user.email, name: user.name });
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    res.json({
+      accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        termsAccepted: user.termsAccepted
+      }
+    });
+
   } catch (err) {
     console.error("Error registering user:", err);
-    res.status(500).json({ error: "Failed to register user" });
+    res.status(500).json({
+      error: "Failed to register user"
+    });
   }
 }
 
@@ -60,8 +92,14 @@ export async function login(req, res) {
 
     res.json({
       accessToken,
-      user: { id: user.id, email: user.email, name: user.name }
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        termsAccepted: user.termsAccepted
+      }
     });
+
   } catch (err) {
     console.error("Error logging in:", err);
     res.status(500).json({ error: "Failed to log in user" });
@@ -183,6 +221,38 @@ export async function resetPassword(req, res) {
     console.error("Password reset request error:", err);
     res.status(500).json({
       error: "Unable to process password reset."
+    });
+  }
+}
+
+//Terms and conditions
+export async function acceptTerms(req, res) {
+  try {
+    const userId = req.user.id;
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        termsAccepted: true,
+        termsAcceptedAt: new Date(),
+      },
+    });
+
+    res.json({
+      message: "Terms accepted.",
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        termsAccepted: user.termsAccepted,
+        termsAcceptedAt: user.termsAcceptedAt,
+      },
+    });
+  } catch (err) {
+    console.error("Accept terms error:", err);
+
+    res.status(500).json({
+      error: "Unable to accept terms.",
     });
   }
 }

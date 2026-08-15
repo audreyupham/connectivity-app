@@ -10,25 +10,36 @@ export default function ExpandedContactHeader({
 }) {
 
   async function handleImageUpload(e) {
-  const file = e.target.files?.[0];
+    const file = e.target.files?.[0];
 
-  if (!file) return;
+    if (!file) return;
 
-  const formData = new FormData();
-  formData.append("image", file);
+    // CREATE MODE
+    if (mode === "create") {
+      onImageUploaded({
+        imageFile: file,
+        imageUrl: URL.createObjectURL(file)
+      });
 
-  const { ok, data } = await api.post(
-    `/contacts/${contact.id}/image`,
-    formData
-  );
+      return;
+    }
 
-  if (ok) {
-    onImageUploaded(data);
-    e.target.value = "";
-  } else {
-    console.error("Image upload failed:", data);
+    // EDIT MODE
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const { ok, data } = await api.post(
+      `/contacts/${contact.id}/image`,
+      formData
+    );
+
+    if (ok) {
+      onImageUploaded(data);
+      e.target.value = "";
+    } else {
+      console.error("Image upload failed:", data);
+    }
   }
-}
 
   return (
     <div className="expanded-contact-header">

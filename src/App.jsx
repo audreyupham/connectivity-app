@@ -16,6 +16,7 @@ import CreateNewPage from "./pages/CreateNewPage";
 import SupportPage from "./pages/SupportPage";
 import ProfileSettingsPage from "./pages/ProfileSettingsPage";
 import FollowUpPage from "./pages/FollowUpPage";
+import TermsPage from "./pages/TermsPage";
 
 export default function App() {
   return (
@@ -112,7 +113,7 @@ export default function App() {
           path="/create-new"
           element={
             <ProtectedRoutes>
-              <Layout>
+              <Layout showFloatingButton={false}>
                 <CreateNewPage />
               </Layout>
             </ProtectedRoutes>
@@ -148,6 +149,15 @@ export default function App() {
               <Layout showFloatingButton={false}>
                 <FollowUpPage />
               </Layout>
+            </ProtectedRoutes>
+          }
+        />
+
+        <Route
+          path="/terms"
+          element={
+            <ProtectedRoutes>
+              <TermsPage />
             </ProtectedRoutes>
           }
         />

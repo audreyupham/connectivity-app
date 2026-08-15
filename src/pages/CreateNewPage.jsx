@@ -9,85 +9,146 @@ export default function CreateNewPage() {
   const params = new URLSearchParams(location.search);
   const navigate = useNavigate();
 
-  // exact query param name: contactId
+  // Exact query param name: contactId
   const contactId = params.get("contactId");
   const nameParam = params.get("name");
 
   const [contacts, setContacts] = useState([]);
   const [mode, setMode] = useState("choose");
   const [selectedContact, setSelectedContact] = useState(null);
+
   const [draft, setDraft] = useState({
     name: "",
     generalNotes: "",
-    newNote: ""
+    newNote: "",
+    image: null,        // Actual File object
+    imagePreview: null // Local blob URL used only for preview
   });
+
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
 
+  // Load contacts for SearchBar
   useEffect(() => {
     let mounted = true;
+
     async function load() {
       const { ok, data } = await api.get("/contacts");
-      if (ok && mounted) setContacts(data || []);
+
+      if (ok && mounted) {
+        setContacts(data || []);
+      }
     }
+
     load();
-    return () => { mounted = false; };
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // Handle query parameters (contactId or name)
   useEffect(() => {
     let mounted = true;
+
     if (contactId) {
       (async () => {
-        const { ok, data, status } = await api.get(`/contacts/${encodeURIComponent(contactId)}`);
+        const {
+          ok,
+          data,
+          status
+        } = await api.get(
+          `/contacts/${encodeURIComponent(contactId)}`
+        );
+
         if (!ok) {
-          // ignore aborts if api marks them
           if (data && data.aborted) return;
           if (!mounted) return;
+
           setError(data || { message: `Error ${status}` });
           return;
         }
+
         if (!mounted) return;
+
         setSelectedContact(data);
+
         setDraft({
           name: data.name || "",
           generalNotes: data.generalNotes || "",
-          newNote: ""
+          newNote: "",
+          image: null,
+          imagePreview: null
         });
+
         setMode("add-note");
       })();
     } else if (nameParam) {
-      setDraft({ name: nameParam, generalNotes: "", newNote: "" });
+      setDraft({
+        name: nameParam,
+        generalNotes: "",
+        newNote: "",
+        image: null,
+        imagePreview: null
+      });
+
       setMode("create-contact");
     }
-    return () => { mounted = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    return () => {
+      mounted = false;
+    };
   }, [location.search]);
 
   // Update draft fields
   function handleChange(field, value) {
-    setDraft(prev => ({ ...prev, [field]: value }));
+    setDraft(prev => ({
+      ...prev,
+      [field]: value
+    }));
   }
 
   async function handleSave() {
     if (isSaving) return;
+
     setIsSaving(true);
     setError(null);
 
     try {
-      // ADD-NOTE MODE
+      // ============================================================
+      // ADD NOTE MODE
+      // ============================================================
       if (mode === "add-note") {
-        // prefer selectedContact.id, fall back to contactId query param
-        const targetId = selectedContact?.id || contactId;
+        const targetId =
+          selectedContact?.id || contactId;
+
         if (!targetId) {
-          setError({ message: "No contact selected to add a note to." });
+          setError({
+            message: "No contact selected to add a note to."
+          });
           return;
         }
 
-        const { ok, data, status } = await api.post(`/contacts/${encodeURIComponent(targetId)}/notes`, { text: draft.newNote });
+        const {
+          ok,
+          data,
+          status
+        } = await api.post(
+          `/contacts/${encodeURIComponent(targetId)}/notes`,
+          {
+            text: draft.newNote
+          }
+        );
+
         if (!ok) {
           if (data && data.aborted) return;
-          setError(data || { message: `Error ${status}` });
+
+          setError(
+            data || {
+              message: `Error ${status}`
+            }
+          );
+
           return;
         }
 
@@ -95,27 +156,101 @@ export default function CreateNewPage() {
         return;
       }
 
-      // CREATE-CONTACT MODE
+      // ============================================================
+      // CREATE CONTACT MODE
+      // ============================================================
       if (mode === "create-contact") {
-        const { ok, data, status } = await api.post("/contacts", {
+        const {
+          ok,
+          data,
+          status
+        } = await api.post("/contacts", {
           name: draft.name,
           generalNotes: draft.generalNotes
         });
 
         if (!ok) {
           if (data && data.aborted) return;
-          setError(data || { message: `Error ${status}` });
+
+          setError(
+            data || {
+              message: `Error ${status}`
+            }
+          );
+
           return;
         }
 
-        // if user entered a newNote while creating, add it to the newly created contact
         const newContactId = data?.id;
-        if (draft.newNote && newContactId) {
-          const noteResult = await api.post(`/contacts/${encodeURIComponent(newContactId)}/notes`, { text: draft.newNote });
+
+        if (!newContactId) {
+          setError({
+            message:
+              "Contact was created, but no contact ID was returned."
+          });
+
+          return;
+        }
+
+        if (draft.image) {
+          const imageFormData = new FormData();
+
+          imageFormData.append(
+            "image",
+            draft.image
+          );
+
+          const imageResult = await api.post(
+            `/contacts/${encodeURIComponent(newContactId)}/image`,
+            imageFormData
+          );
+
+          if (!imageResult.ok) {
+            if (
+              imageResult.data &&
+              imageResult.data.aborted
+            ) {
+              return;
+            }
+
+            setError(
+              imageResult.data || {
+                message:
+                  `Contact created, but image upload failed (${imageResult.status})`
+              }
+            );
+
+            navigate(`/contacts/${newContactId}`);
+
+            return;
+          }
+        }
+
+        if (
+          draft.newNote &&
+          draft.newNote.trim() &&
+          newContactId
+        ) {
+          const noteResult = await api.post(
+            `/contacts/${encodeURIComponent(newContactId)}/notes`,
+            {
+              text: draft.newNote
+            }
+          );
+
           if (!noteResult.ok) {
-            // ignore aborts, otherwise surface error but still navigate to contact
-            if (!(noteResult.data && noteResult.data.aborted)) {
-              setError(noteResult.data || { message: `Note error ${noteResult.status}` });
+            if (
+              !(
+                noteResult.data &&
+                noteResult.data.aborted
+              )
+            ) {
+              setError(
+                noteResult.data || {
+                  message:
+                    `Note error ${noteResult.status}`
+                }
+              );
             }
           }
         }
@@ -124,15 +259,25 @@ export default function CreateNewPage() {
         return;
       }
     } catch (err) {
-      // ignore native aborts thrown by fetch
-      if (err && err.name === "AbortError") return;
-      setError({ message: err.message });
+      // Ignore native aborts
+      if (
+        err &&
+        err.name === "AbortError"
+      ) {
+        return;
+      }
+
+      setError({
+        message: err.message
+      });
     } finally {
       setIsSaving(false);
     }
   }
 
-  // ADD-NOTE MODE
+  // ================================================================
+  // ADD NOTE MODE
+  // ================================================================
   if (mode === "add-note") {
     return (
       <ContactDetailsLayout
@@ -151,7 +296,9 @@ export default function CreateNewPage() {
     );
   }
 
-  // CREATE-CONTACT MODE
+  // ================================================================
+  // CREATE CONTACT MODE
+  // ================================================================
   if (mode === "create-contact") {
     return (
       <ContactDetailsLayout
@@ -165,27 +312,62 @@ export default function CreateNewPage() {
         onBack={() => navigate("/contacts")}
         onCancel={() => navigate("/contacts")}
         isSaving={isSaving}
+        onImageUploaded={(updated) => {
+         setDraft(prev => ({
+            ...prev,
+            image: updated.imageFile || prev.image,
+            imagePreview:
+              updated.imageUrl || prev.imagePreview
+          }));
+        }}
+        onRemoveImage={() => {
+          setDraft(prev => ({
+            ...prev,
+            image: null,
+            imagePreview: null
+          }));
+        }}
         error={error}
       />
     );
   }
 
-  // CHOOSE MODE (SearchBar only)
+  // ================================================================
+  // CHOOSE MODE
+  // ================================================================
   return (
     <div>
       <SearchBar
         contacts={contacts}
         onSelectContact={(c) => {
           setSelectedContact(c);
-          setDraft({ name: c.name, generalNotes: c.generalNotes, newNote: "" });
+
+          setDraft({
+            name: c.name,
+            generalNotes: c.generalNotes || "",
+            newNote: "",
+            image: null,
+            imagePreview: null
+          });
+
           setMode("add-note");
         }}
         onCreateNewContact={(name) => {
-          setDraft({ name, generalNotes: "", newNote: "" });
+          setDraft({
+            name,
+            generalNotes: "",
+            newNote: "",
+            image: null,
+            imagePreview: null
+          });
+
           setMode("create-contact");
         }}
       />
-      <h1 className="header">Select a Contact or Create a New One</h1>
+
+      <h1 className="header">
+        Select a Contact or Create a New One
+      </h1>
     </div>
   );
 }

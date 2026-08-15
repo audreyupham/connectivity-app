@@ -37,7 +37,9 @@ model User {
   password     String
   name         String
   resetToken   String? // temporary token for password resets
-  resetExpires DateTime? // expiration time (optional)
+  resetExpires DateTime? 
+  termsAccepted   Boolean   @default(false)
+  termsAcceptedAt DateTime?
 
   contacts  Contact[]
   followUps FollowUp[]

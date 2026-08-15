@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 0px 20px;
   background: #f5f7fa;
 }
 
@@ -34,7 +34,7 @@ h3 {
   display: flex;
   gap: 20px;
   justify-content: flex-end;
-  margin-bottom: 24px;
+  margin: 10px;
 }
 
 
@@ -69,6 +69,11 @@ h3 {
 .contact-toolbar button:disabled {
   opacity: .55;
   cursor: not-allowed;
+}
+
+.followup-button {
+  background-color: white;
+  color: black;
 }
 
 
@@ -176,6 +181,8 @@ textarea {
   width: 64px;
   height: 64px;
   z-index: 20;
+  align-items: center;
+  justify-content: center;
 }
 
 .floating-back-button button {
@@ -358,6 +365,13 @@ input:-webkit-autofill:active {
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
+}
+
+
+input[type="file"]::file-selector-button {
+  background-color: #F0F0F0 !important;
+  color: #000000 !important;
+  border: 1px solid #000000 !important;
 }
 
 .remove-image-button {

@@ -23,25 +23,30 @@ export default function Sidebar() {
   useEffect(() => {
     async function loadFollowUps() {
       const res = await api.get("/contacts/followups");
+
       if (res.ok) {
         setFollowUpCount(res.data.length);
       }
     }
-    loadFollowUps();
-  }, []);
 
-  useEffect(() => {
-    function handleFollowUpCompleted() {
-      setFollowUpCount(c => Math.max(0, c - 1));
+    loadFollowUps();
+
+    function handleFollowUpChanged() {
+      loadFollowUps();
     }
 
-    window.addEventListener("followup-completed", handleFollowUpCompleted);
+    window.addEventListener(
+      "followup-changed",
+      handleFollowUpChanged
+    );
 
     return () => {
-      window.removeEventListener("followup-completed", handleFollowUpCompleted);
+      window.removeEventListener(
+        "followup-changed",
+        handleFollowUpChanged
+      );
     };
   }, []);
-
 
   return (
     <>
