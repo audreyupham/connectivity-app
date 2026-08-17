@@ -47,6 +47,9 @@ export default function ResetPasswordPage() {
   }
 
   return (
+    <>
+    <p>Note: this is a beta version, and email reset is still a work in progress. Please email <strong>support.connectivity@gmail.com</strong> to reset your password.</p>
+
     <form onSubmit={handleSubmit} className="login-form">
       {error && <p className="error">{error}</p>}
 
@@ -71,5 +74,6 @@ export default function ResetPasswordPage() {
         {loading ? "Sending..." : "Send Reset Link"}
       </button>
     </form>
+    </>
   );
 }
