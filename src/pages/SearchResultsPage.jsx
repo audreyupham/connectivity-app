@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../utils/api";
 import "./SearchResultsPage.css";
+import backIcon from "../assets/back-icon.png";
 
 function highlight(text, search) {
   if (!text) return text;
@@ -59,7 +60,11 @@ export default function SearchResultsPage() {
         className="back-button"
         onClick={() => navigate(-1)}
       >
-        ⇦
+        <img
+          src={backIcon}
+          alt="Back"
+          className="back-icon"
+        />
       </button>
 
       <h1>

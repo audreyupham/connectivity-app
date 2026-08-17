@@ -44,6 +44,15 @@
   transform: scale(1.05);
 }
 
+.back-button img.back-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: invert(100%); /* makes white if your PNG is dark */
+  pointer-events: none; /* ensures hover still applies to button */
+}
+
+
 /* ---------- Results Count ---------- */
 
 .results-count {

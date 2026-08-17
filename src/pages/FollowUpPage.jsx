@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
+import backIcon from "../assets/back-icon.png";
 import "./FollowUpPage.css";
 
 export default function FollowUpPage({ onFollowUpCompleted }) {
@@ -49,7 +50,11 @@ export default function FollowUpPage({ onFollowUpCompleted }) {
     <div className="followup-page">
 
       { <button className="back-button" onClick={() => navigate("/contacts")}>
-        🠜
+        <img
+          src={backIcon}
+          alt="Back"
+          className="back-icon"
+        />
       </button>
       }
 

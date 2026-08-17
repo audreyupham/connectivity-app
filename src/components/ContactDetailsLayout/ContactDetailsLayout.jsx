@@ -5,6 +5,7 @@ import TextField from "../TextField";
 import TextAreaField from "../TextAreaField";
 import TimestampedNotesList from "../TimestampedNotesList";
 import { useState } from "react";
+import backIcon from "../../assets/back-icon.png";
 
 export default function ContactDetailsLayout({
   contact,
@@ -91,6 +92,7 @@ export default function ContactDetailsLayout({
     mode === "add-note" ||
     mode === "edit-note";
 
+  
   return (
     <div className="contact-details-layout">
 
@@ -100,7 +102,11 @@ export default function ContactDetailsLayout({
 
         {mode === "view" && (
           <button onClick={onBack}>
-            🠜
+            <img
+              src={backIcon}
+              alt="Back"
+              className="back-icon"
+            />
           </button>
         )}
 
@@ -112,7 +118,11 @@ export default function ContactDetailsLayout({
             onClick={onCancel}
             disabled={isSaving}
           >
-            ⇦
+            <img
+              src={backIcon}
+              alt="Back"
+              className="back-icon"
+            />
           </button>
         )}
 
