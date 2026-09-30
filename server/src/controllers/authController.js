@@ -7,7 +7,7 @@ import { sendPasswordResetEmail } from "../utils/email.js";
 
 // Helper to generate tokens
 function generateAccessToken(user) {
-  return jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+  return jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
 }
 
 function generateRefreshToken(user) {

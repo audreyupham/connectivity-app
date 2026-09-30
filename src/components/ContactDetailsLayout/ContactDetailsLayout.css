@@ -273,6 +273,20 @@ input:-webkit-autofill:active {
   caret-color: #000;
 }
 
+/*welcome note format (supportPage)*/
+.welcome-note {
+  font-size: 1.15rem; 
+  line-height: 1.6; 
+  text-align: center; 
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0.75rem 1rem; 
+  color: #3a3a3a;
+  font-weight: 400; 
+  letter-spacing: 0.3px;
+}
+
+
 
 /* ---------- Laptop ---------- */
 

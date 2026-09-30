@@ -50,12 +50,12 @@ export default function FollowUpPage({ onFollowUpCompleted }) {
     <div className="followup-page">
 
       { <button className="back-button" onClick={() => navigate("/contacts")}>
-        <img
-          src={backIcon}
-          alt="Back"
-          className="back-icon"
-        />
-      </button>
+          <img
+            src={backIcon}
+            alt="Back"
+            className="back-icon"
+          />
+        </button>
       }
 
       <h1>Follow-Ups</h1>
