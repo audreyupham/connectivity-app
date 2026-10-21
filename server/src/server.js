@@ -12,12 +12,12 @@ import contactsRouter from "./routes/contacts.js";
 const app = express();
 
 const PORT = process.env.PORT || 3001;
-
+/*
 const uploadsDir = path.join(
 process.cwd(),
 "src",
 "uploads"
-);
+);*/
 
 // ---------- Middleware ----------
 
@@ -29,10 +29,10 @@ credentials: true
 );
 
 // Serve uploaded images
-app.use(
+/*app.use(
 "/uploads",
 express.static(uploadsDir)
-);
+);*/
 
 app.use(express.json());
 app.use(cookieParser());
@@ -65,5 +65,5 @@ app.use(errorHandler);
 
 app.listen(PORT, "0.0.0.0", () => {
 console.log(`Server is running on port ${PORT}`);
-console.log(`Uploads directory: ${uploadsDir}`);
+//console.log(`Uploads directory: ${uploadsDir}`);
 });
